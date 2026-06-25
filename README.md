@@ -11,10 +11,13 @@ This foundation milestone includes:
 - catalog validation and field coverage stats
 - rule-based preference extraction for common shopping constraints
 - dot-path constraint verification against product records
+- deterministic keyword and attribute-filter retrieval
+- transparent simple ranking
+- a first `RecHarness.assist()` SDK flow
 - a small backpack example catalog
 - pytest coverage for the foundation behavior
 
-Later milestones will add retrieval, ranking, recommendation verification, tracing, evaluation, and MCP integration.
+Later milestones will add recommendation verification, tracing, evaluation, and MCP integration.
 
 ## Development
 
@@ -82,6 +85,24 @@ report = ConstraintVerifier().verify_product(
 )
 
 print(report.status)
+```
+
+## Assist Flow
+
+```python
+from recharness import RecHarness
+
+harness = RecHarness.from_jsonl_catalog("examples/backpacks/catalog.jsonl")
+
+bundle = harness.assist(
+    user_query="Find a commuting backpack under 1500 RMB that fits a 14-inch laptop and is not too business.",
+    top_k=2,
+)
+
+for candidate in bundle.recommended:
+    print(candidate.product.title, candidate.final_score)
+
+print(bundle.summary_for_agent)
 ```
 
 Catalog rows are JSON objects that validate as `ProductItem` records:

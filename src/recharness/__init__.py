@@ -7,7 +7,15 @@ from recharness.catalog import (
     CatalogValidationReport,
     JsonlCatalog,
 )
+from recharness.core import RecHarness
 from recharness.preference import RuleBasedPreferenceParser
+from recharness.ranking import SimpleRanker
+from recharness.retrieval import (
+    AttributeFilterRetriever,
+    HybridRetriever,
+    KeywordRetriever,
+    ScoredProduct,
+)
 from recharness.schema import (
     Constraint,
     ConstraintCheck,
@@ -31,14 +39,20 @@ __all__ = [
     "CatalogValidationReport",
     "Constraint",
     "ConstraintCheck",
+    "AttributeFilterRetriever",
     "Evidence",
+    "HybridRetriever",
     "JsonlCatalog",
+    "KeywordRetriever",
     "Money",
     "Preference",
     "ProductItem",
+    "RecHarness",
     "RecommendationBundle",
     "RecommendationCandidate",
     "RuleBasedPreferenceParser",
+    "ScoredProduct",
+    "SimpleRanker",
     "TraceEvent",
     "UserNeed",
     "VerificationReport",
