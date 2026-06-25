@@ -8,6 +8,7 @@ from recharness.catalog import (
     JsonlCatalog,
 )
 from recharness.core import RecHarness
+from recharness.evaluation import AgentOutput, EvalMission, EvalRecord, EvalResult, EvalRunner
 from recharness.preference import RuleBasedPreferenceParser
 from recharness.ranking import SimpleRanker
 from recharness.retrieval import (
@@ -38,10 +39,15 @@ __all__ = [
     "CatalogStats",
     "CatalogValidationReport",
     "ClaimVerifier",
+    "AgentOutput",
     "Constraint",
     "ConstraintCheck",
     "AttributeFilterRetriever",
     "Evidence",
+    "EvalMission",
+    "EvalRecord",
+    "EvalResult",
+    "EvalRunner",
     "HybridRetriever",
     "JsonlCatalog",
     "KeywordRetriever",

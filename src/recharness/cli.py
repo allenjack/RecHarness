@@ -8,6 +8,7 @@ from pathlib import Path
 
 from recharness.catalog import CatalogLoadError, JsonlCatalog
 from recharness.core import RecHarness
+from recharness.evaluation import EvalRunner
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -31,6 +32,12 @@ def main(argv: list[str] | None = None) -> int:
     assist_parser.add_argument("--query", required=True)
     assist_parser.add_argument("--top-k", type=int, default=5)
 
+    eval_parser = subparsers.add_parser("eval")
+    eval_parser.add_argument("--catalog", required=True)
+    eval_parser.add_argument("--missions", required=True)
+    eval_parser.add_argument("--agent-outputs", required=True)
+    eval_parser.add_argument("--out", required=True)
+
     args = parser.parse_args(argv)
 
     if args.command == "catalog" and args.catalog_command == "validate":
@@ -39,6 +46,8 @@ def main(argv: list[str] | None = None) -> int:
         return _verify_recommendation(args.catalog, args.query, args.answer, args.answer_file)
     if args.command == "assist":
         return _assist(args.catalog, args.query, args.top_k)
+    if args.command == "eval":
+        return _eval(args.catalog, args.missions, args.agent_outputs, args.out)
 
     parser.error("Unsupported command")
     return 2
@@ -125,6 +134,23 @@ def _assist(catalog_path: str, query: str, top_k: int) -> int:
         print("Summary for agent")
         print(bundle.summary_for_agent)
 
+    return 0
+
+
+def _eval(catalog_path: str, missions_path: str, outputs_path: str, out_dir: str) -> int:
+    try:
+        harness = RecHarness.from_jsonl_catalog(catalog_path)
+    except CatalogLoadError as exc:
+        print(f"Catalog invalid: {exc}", file=sys.stderr)
+        return 1
+
+    result = EvalRunner(harness=harness, missions_path=missions_path).run_with_agent_outputs(
+        outputs_path
+    )
+    result.write(out_dir)
+
+    print(f"Evaluated {result.metrics['missions_total']} mission outputs")
+    print(f"Wrote metrics.json, leaderboard.csv, and traces.jsonl to {out_dir}")
     return 0
 
 

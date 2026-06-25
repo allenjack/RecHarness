@@ -135,6 +135,18 @@ recharness assist \
   --top-k 2
 ```
 
+## Evaluate Agent Outputs
+
+```bash
+recharness eval \
+  --catalog examples/backpacks/catalog.jsonl \
+  --missions examples/backpacks/missions.jsonl \
+  --agent-outputs examples/backpacks/agent_outputs.jsonl \
+  --out runs/eval_baseline
+```
+
+The eval command writes `metrics.json`, `leaderboard.csv`, and `traces.jsonl`.
+
 Catalog rows are JSON objects that validate as `ProductItem` records:
 
 ```json
