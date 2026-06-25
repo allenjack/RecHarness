@@ -87,6 +87,29 @@ report = ConstraintVerifier().verify_product(
 print(report.status)
 ```
 
+## Verify An Agent Answer
+
+```python
+from recharness import RecHarness
+
+harness = RecHarness.from_jsonl_catalog("examples/backpacks/catalog.jsonl")
+
+report = harness.verify_agent_recommendation(
+    user_query="Find a commuting backpack under 1500 RMB that fits a 14-inch laptop.",
+    agent_answer="I recommend RainGuard Metro Pack 24L. It costs 1599 RMB.",
+)
+
+print(report.status)
+print(report.violations)
+```
+
+```bash
+recharness verify \
+  --catalog examples/backpacks/catalog.jsonl \
+  --query "Find a commuting backpack under 1500 RMB that fits a 14-inch laptop" \
+  --answer "I recommend RainGuard Metro Pack 24L. It costs 1599 RMB."
+```
+
 ## Assist Flow
 
 ```python

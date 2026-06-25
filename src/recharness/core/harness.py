@@ -10,7 +10,7 @@ from recharness.preference import RuleBasedPreferenceParser
 from recharness.ranking import SimpleRanker
 from recharness.retrieval import HybridRetriever
 from recharness.schema import RecommendationBundle
-from recharness.verification import ConstraintVerifier
+from recharness.verification import ConstraintVerifier, RecommendationVerifier
 
 
 class RecHarness:
@@ -23,10 +23,14 @@ class RecHarness:
         retriever: HybridRetriever | None = None,
         ranker: SimpleRanker | None = None,
         verifier: ConstraintVerifier | None = None,
+        recommendation_verifier: RecommendationVerifier | None = None,
     ) -> None:
         self.catalog = catalog
         self.parser = parser or RuleBasedPreferenceParser()
         self.verifier = verifier or ConstraintVerifier()
+        self.recommendation_verifier = recommendation_verifier or RecommendationVerifier(
+            constraint_verifier=self.verifier
+        )
         self.retriever = retriever or HybridRetriever()
         self.ranker = ranker or SimpleRanker(verifier=self.verifier)
 
@@ -50,6 +54,10 @@ class RecHarness:
             summary_for_agent=_summary_for_agent(ranked),
             trace_id=f"assist_{uuid4().hex}",
         )
+
+    def verify_agent_recommendation(self, user_query: str, agent_answer: str):
+        need = self.parser.parse(user_query)
+        return self.recommendation_verifier.verify(need, agent_answer, self.catalog)
 
 
 def _comparison_axes(need) -> list[str]:

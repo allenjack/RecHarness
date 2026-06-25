@@ -30,13 +30,14 @@ from recharness.schema import (
     VerificationReport,
     Violation,
 )
-from recharness.verification import ConstraintVerifier
+from recharness.verification import ClaimVerifier, ConstraintVerifier, RecommendationVerifier
 
 __all__ = [
     "CatalogIssue",
     "CatalogLoadError",
     "CatalogStats",
     "CatalogValidationReport",
+    "ClaimVerifier",
     "Constraint",
     "ConstraintCheck",
     "AttributeFilterRetriever",
@@ -58,4 +59,5 @@ __all__ = [
     "VerificationReport",
     "Violation",
     "ConstraintVerifier",
+    "RecommendationVerifier",
 ]
