@@ -9,6 +9,7 @@ from pathlib import Path
 from recharness.catalog import CatalogLoadError, JsonlCatalog
 from recharness.core import RecHarness
 from recharness.evaluation import EvalRunner
+from recharness.integrations.mcp_server import create_mcp_server
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -38,6 +39,11 @@ def main(argv: list[str] | None = None) -> int:
     eval_parser.add_argument("--agent-outputs", required=True)
     eval_parser.add_argument("--out", required=True)
 
+    mcp_parser = subparsers.add_parser("mcp")
+    mcp_subparsers = mcp_parser.add_subparsers(dest="mcp_command", required=True)
+    mcp_serve_parser = mcp_subparsers.add_parser("serve")
+    mcp_serve_parser.add_argument("--catalog", required=True)
+
     args = parser.parse_args(argv)
 
     if args.command == "catalog" and args.catalog_command == "validate":
@@ -48,6 +54,8 @@ def main(argv: list[str] | None = None) -> int:
         return _assist(args.catalog, args.query, args.top_k)
     if args.command == "eval":
         return _eval(args.catalog, args.missions, args.agent_outputs, args.out)
+    if args.command == "mcp" and args.mcp_command == "serve":
+        return _mcp_serve(args.catalog)
 
     parser.error("Unsupported command")
     return 2
@@ -151,6 +159,16 @@ def _eval(catalog_path: str, missions_path: str, outputs_path: str, out_dir: str
 
     print(f"Evaluated {result.metrics['missions_total']} mission outputs")
     print(f"Wrote metrics.json, leaderboard.csv, and traces.jsonl to {out_dir}")
+    return 0
+
+
+def _mcp_serve(catalog_path: str) -> int:
+    try:
+        server = create_mcp_server(catalog_path)
+    except RuntimeError as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
+    server.run()
     return 0
 
 

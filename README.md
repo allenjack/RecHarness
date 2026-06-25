@@ -150,6 +150,19 @@ recharness eval \
 
 The eval command writes `metrics.json`, `leaderboard.csv`, and `traces.jsonl`.
 
+## MCP Server
+
+The MCP integration is optional:
+
+```bash
+uv sync --extra dev --extra mcp
+
+recharness mcp serve \
+  --catalog examples/backpacks/catalog.jsonl
+```
+
+The MCP server exposes tools for preference parsing, assist-mode bundles, and recommendation verification.
+
 Catalog rows are JSON objects that validate as `ProductItem` records:
 
 ```json
