@@ -69,7 +69,9 @@ class EvalRunner:
                 user_query=mission.user_query,
                 agent_answer=output.answer,
             )
-            product_grounded = report.summary != "No catalog products were resolved from the agent answer."
+            product_grounded = (
+                report.summary != "No catalog products were resolved from the agent answer."
+            )
             hard_constraints_satisfied = report.status != "fail"
             records.append(
                 EvalRecord(

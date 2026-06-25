@@ -5,7 +5,8 @@ def test_parser_extracts_english_budget_category_laptop_size_and_negative_style(
     parser = RuleBasedPreferenceParser()
 
     need = parser.parse(
-        "Find a commuting backpack under 1500 RMB that fits a 14-inch laptop and is not too business."
+        "Find a commuting backpack under 1500 RMB that fits a 14-inch laptop "
+        "and is not too business."
     )
 
     assert need.category == "backpack"

@@ -42,7 +42,7 @@ class RecHarness:
         cls,
         path: str | Path,
         trace_path: str | Path | None = None,
-    ) -> "RecHarness":
+    ) -> RecHarness:
         trace_logger = JsonlTraceLogger(trace_path) if trace_path is not None else None
         return cls(catalog=JsonlCatalog.load(path), trace_logger=trace_logger)
 

@@ -13,7 +13,11 @@ class RuleBasedPreferenceParser:
     _price_patterns = [
         re.compile(r"(?:under|below|less than)\s*(?:rmb|cny|¥|\$)?\s*(\d+(?:\.\d+)?)", re.I),
         re.compile(r"(?:rmb|cny|¥|\$)\s*(\d+(?:\.\d+)?)\s*(?:or less|max|maximum)?", re.I),
-        re.compile(r"(\d+(?:\.\d+)?)\s*(?:元|块|rmb|cny)\s*(?:以内|以下|内|or less|max|maximum)?", re.I),
+        re.compile(
+            r"(\d+(?:\.\d+)?)\s*(?:元|块|rmb|cny)\s*"
+            r"(?:以内|以下|内|or less|max|maximum)?",
+            re.I,
+        ),
     ]
     _laptop_patterns = [
         re.compile(r"(\d+(?:\.\d+)?)\s*(?:-| )?\s*inch(?:es)?\s*laptop", re.I),
@@ -42,7 +46,11 @@ class RuleBasedPreferenceParser:
         return need
 
     def _extract_category(self, normalized_query: str) -> str | None:
-        if "backpack" in normalized_query or "双肩包" in normalized_query or "背包" in normalized_query:
+        if (
+            "backpack" in normalized_query
+            or "双肩包" in normalized_query
+            or "背包" in normalized_query
+        ):
             return "backpack"
         return None
 

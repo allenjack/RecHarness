@@ -15,7 +15,7 @@ class RecHarnessMcpTools:
         self.harness = harness
 
     @classmethod
-    def from_jsonl_catalog(cls, catalog_path: str | Path) -> "RecHarnessMcpTools":
+    def from_jsonl_catalog(cls, catalog_path: str | Path) -> RecHarnessMcpTools:
         return cls(RecHarness.from_jsonl_catalog(catalog_path))
 
     def parse_preferences(self, user_query: str) -> dict[str, Any]:
@@ -40,7 +40,9 @@ def create_mcp_server(catalog_path: str | Path):
     try:
         from mcp.server.fastmcp import FastMCP
     except ImportError as exc:
-        raise RuntimeError("Install RecHarness with the 'mcp' extra to use the MCP server.") from exc
+        raise RuntimeError(
+            "Install RecHarness with the 'mcp' extra to use the MCP server."
+        ) from exc
 
     tools = RecHarnessMcpTools.from_jsonl_catalog(catalog_path)
     server = FastMCP("RecHarness")

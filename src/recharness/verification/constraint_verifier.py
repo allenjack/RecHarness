@@ -4,7 +4,13 @@ from __future__ import annotations
 
 from typing import Any
 
-from recharness.schema import Constraint, ConstraintCheck, ProductItem, VerificationReport, Violation
+from recharness.schema import (
+    Constraint,
+    ConstraintCheck,
+    ProductItem,
+    VerificationReport,
+    Violation,
+)
 
 
 class ConstraintVerifier:

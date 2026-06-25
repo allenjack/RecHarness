@@ -15,12 +15,18 @@ def test_eval_runner_scores_agent_outputs_against_missions(tmp_path):
             {
                 "mission_id": "backpack_001",
                 "agent_name": "test_agent",
-                "answer": "I recommend UrbanLite Commuter Backpack 22L. It costs 899 RMB and fits a 14-inch laptop.",
+                "answer": (
+                    "I recommend UrbanLite Commuter Backpack 22L. It costs 899 RMB "
+                    "and fits a 14-inch laptop."
+                ),
             },
             {
                 "mission_id": "backpack_002",
                 "agent_name": "test_agent",
-                "answer": "I recommend NorthPeak Office Pack 28L. It costs 1299 RMB and is fully waterproof.",
+                "answer": (
+                    "I recommend NorthPeak Office Pack 28L. It costs 1299 RMB "
+                    "and is fully waterproof."
+                ),
             },
         ],
     )
@@ -46,7 +52,10 @@ def test_cli_eval_writes_metrics_leaderboard_and_traces(tmp_path):
             {
                 "mission_id": "backpack_001",
                 "agent_name": "test_agent",
-                "answer": "I recommend UrbanLite Commuter Backpack 22L. It costs 899 RMB and fits a 14-inch laptop.",
+                "answer": (
+                    "I recommend UrbanLite Commuter Backpack 22L. It costs 899 RMB "
+                    "and fits a 14-inch laptop."
+                ),
             }
         ],
     )

@@ -6,7 +6,10 @@ def test_verify_agent_recommendation_reports_hard_constraint_violation():
 
     report = harness.verify_agent_recommendation(
         user_query="Find a commuting backpack under 1500 RMB that fits a 14-inch laptop",
-        agent_answer="I recommend RainGuard Metro Pack 24L. It costs 1599 RMB and fits a 15-inch laptop.",
+        agent_answer=(
+            "I recommend RainGuard Metro Pack 24L. It costs 1599 RMB "
+            "and fits a 15-inch laptop."
+        ),
     )
 
     assert report.status == "fail"
@@ -23,7 +26,10 @@ def test_verify_agent_recommendation_reports_overstated_waterproof_claim():
 
     report = harness.verify_agent_recommendation(
         user_query="Find a commuting backpack under 1500 RMB",
-        agent_answer="I recommend NorthPeak Office Pack 28L. It costs 1299 RMB and is fully waterproof.",
+        agent_answer=(
+            "I recommend NorthPeak Office Pack 28L. It costs 1299 RMB "
+            "and is fully waterproof."
+        ),
     )
 
     assert report.status == "warning"
@@ -36,7 +42,10 @@ def test_verify_agent_recommendation_passes_grounded_answer():
 
     report = harness.verify_agent_recommendation(
         user_query="Find a commuting backpack under 1500 RMB that fits a 14-inch laptop",
-        agent_answer="I recommend UrbanLite Commuter Backpack 22L. It costs 899 RMB and fits a 14-inch laptop.",
+        agent_answer=(
+            "I recommend UrbanLite Commuter Backpack 22L. It costs 899 RMB "
+            "and fits a 14-inch laptop."
+        ),
     )
 
     assert report.status == "pass"

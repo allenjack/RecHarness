@@ -50,7 +50,7 @@ class JsonlCatalog(Sequence[ProductItem]):
         self.path = path
 
     @classmethod
-    def load(cls, path: str | Path) -> "JsonlCatalog":
+    def load(cls, path: str | Path) -> JsonlCatalog:
         catalog_path = Path(path)
         products: list[ProductItem] = []
 
@@ -111,7 +111,9 @@ class JsonlCatalog(Sequence[ProductItem]):
         )
 
     def stats(self) -> CatalogStats:
-        field_names = sorted({field for product in self._products for field in _present_fields(product)})
+        field_names = sorted(
+            {field for product in self._products for field in _present_fields(product)}
+        )
         coverage = {
             field: _coverage_for_field(self._products, field)
             for field in field_names

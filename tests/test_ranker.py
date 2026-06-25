@@ -1,10 +1,11 @@
-from recharness import JsonlCatalog, HybridRetriever, RuleBasedPreferenceParser, SimpleRanker
+from recharness import HybridRetriever, JsonlCatalog, RuleBasedPreferenceParser, SimpleRanker
 
 
 def test_simple_ranker_prefers_constraint_satisfying_non_negative_style_products():
     catalog = JsonlCatalog.load("examples/backpacks/catalog.jsonl")
     need = RuleBasedPreferenceParser().parse(
-        "Find a commuting backpack under 1500 RMB that fits a 14-inch laptop and is not too business"
+        "Find a commuting backpack under 1500 RMB that fits a 14-inch laptop "
+        "and is not too business"
     )
     retrieved = HybridRetriever().retrieve(need, catalog, top_k=10)
 

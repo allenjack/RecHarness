@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 from pydantic import ValidationError
@@ -89,4 +89,4 @@ def test_trace_event_defaults_timestamp_when_not_supplied():
     )
 
     assert isinstance(event.timestamp, datetime)
-    assert event.timestamp.tzinfo == timezone.utc
+    assert event.timestamp.tzinfo == UTC

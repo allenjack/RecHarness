@@ -5,7 +5,10 @@ def test_recharness_assist_returns_recommendation_bundle_for_example_catalog():
     harness = RecHarness.from_jsonl_catalog("examples/backpacks/catalog.jsonl")
 
     bundle = harness.assist(
-        user_query="Find a commuting backpack under 1500 RMB that fits a 14-inch laptop and is not too business",
+        user_query=(
+            "Find a commuting backpack under 1500 RMB that fits a 14-inch laptop "
+            "and is not too business"
+        ),
         top_k=2,
     )
 
