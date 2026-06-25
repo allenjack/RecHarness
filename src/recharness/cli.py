@@ -26,12 +26,19 @@ def main(argv: list[str] | None = None) -> int:
     answer_group.add_argument("--answer")
     answer_group.add_argument("--answer-file")
 
+    assist_parser = subparsers.add_parser("assist")
+    assist_parser.add_argument("--catalog", required=True)
+    assist_parser.add_argument("--query", required=True)
+    assist_parser.add_argument("--top-k", type=int, default=5)
+
     args = parser.parse_args(argv)
 
     if args.command == "catalog" and args.catalog_command == "validate":
         return _validate_catalog(args.catalog_path)
     if args.command == "verify":
         return _verify_recommendation(args.catalog, args.query, args.answer, args.answer_file)
+    if args.command == "assist":
+        return _assist(args.catalog, args.query, args.top_k)
 
     parser.error("Unsupported command")
     return 2
@@ -93,6 +100,32 @@ def _verify_recommendation(
             print(f"- {suggestion}")
 
     return 0 if report.status == "pass" else 1
+
+
+def _assist(catalog_path: str, query: str, top_k: int) -> int:
+    try:
+        harness = RecHarness.from_jsonl_catalog(catalog_path)
+    except CatalogLoadError as exc:
+        print(f"Catalog invalid: {exc}", file=sys.stderr)
+        return 1
+
+    bundle = harness.assist(query, top_k=top_k)
+
+    print("Top recommendations")
+    for index, candidate in enumerate(bundle.recommended, start=1):
+        score = "n/a" if candidate.final_score is None else f"{candidate.final_score:.3f}"
+        price = ""
+        if candidate.product.price is not None:
+            price = f" - {candidate.product.price.amount:g} {candidate.product.price.currency}"
+        print(f"{index}. {candidate.product.title}{price} - score {score}")
+        if candidate.violations:
+            print(f"   Risks: {len(candidate.violations)} constraint violation(s)")
+
+    if bundle.summary_for_agent:
+        print("Summary for agent")
+        print(bundle.summary_for_agent)
+
+    return 0
 
 
 if __name__ == "__main__":
