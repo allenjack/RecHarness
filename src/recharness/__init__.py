@@ -7,6 +7,7 @@ from recharness.catalog import (
     CatalogValidationReport,
     JsonlCatalog,
 )
+from recharness.preference import RuleBasedPreferenceParser
 from recharness.schema import (
     Constraint,
     ConstraintCheck,
@@ -21,6 +22,7 @@ from recharness.schema import (
     VerificationReport,
     Violation,
 )
+from recharness.verification import ConstraintVerifier
 
 __all__ = [
     "CatalogIssue",
@@ -36,8 +38,10 @@ __all__ = [
     "ProductItem",
     "RecommendationBundle",
     "RecommendationCandidate",
+    "RuleBasedPreferenceParser",
     "TraceEvent",
     "UserNeed",
     "VerificationReport",
     "Violation",
+    "ConstraintVerifier",
 ]

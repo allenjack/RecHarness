@@ -9,10 +9,12 @@ This foundation milestone includes:
 - typed product, preference, constraint, recommendation, verification, and trace schemas
 - deterministic local JSONL catalog loading
 - catalog validation and field coverage stats
+- rule-based preference extraction for common shopping constraints
+- dot-path constraint verification against product records
 - a small backpack example catalog
 - pytest coverage for the foundation behavior
 
-Later milestones will add preference parsing, retrieval, ranking, recommendation verification, tracing, evaluation, and MCP integration.
+Later milestones will add retrieval, ranking, recommendation verification, tracing, evaluation, and MCP integration.
 
 ## Development
 
@@ -42,6 +44,44 @@ stats = catalog.stats()
 
 print(report.product_count)
 print(stats.field_coverage["price"])
+```
+
+## Parse A Shopping Need
+
+```python
+from recharness import RuleBasedPreferenceParser
+
+parser = RuleBasedPreferenceParser()
+need = parser.parse(
+    "Find a commuting backpack under 1500 RMB that fits a 14-inch laptop and is not too business."
+)
+
+print(need.hard_constraints)
+print(need.negative_preferences)
+```
+
+## Verify Product Constraints
+
+```python
+from recharness import Constraint, ConstraintVerifier, Money, ProductItem
+
+product = ProductItem(
+    product_id="bag_001",
+    title="UrbanLite Commuter Backpack 22L",
+    category="backpack",
+    price=Money(amount=899, currency="CNY"),
+    attributes={"laptop_size_inches": 14, "style": ["minimal", "casual"]},
+)
+
+report = ConstraintVerifier().verify_product(
+    product,
+    [
+        Constraint(field="price.amount", operator="<=", value=1500),
+        Constraint(field="attributes.laptop_size_inches", operator=">=", value=14),
+    ],
+)
+
+print(report.status)
 ```
 
 Catalog rows are JSON objects that validate as `ProductItem` records:
