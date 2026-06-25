@@ -1,0 +1,54 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "recharness"
+version = "0.1.0"
+description = "An agent-agnostic harness for reliable product recommendation by general-purpose agents."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [
+  { name = "RecHarness Contributors" }
+]
+keywords = [
+  "agents",
+  "recommendation",
+  "evaluation",
+  "shopping",
+  "harness"
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+  "pydantic>=2.7,<3",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8,<9",
+]
+
+[project.urls]
+Homepage = "https://github.com/recharness/recharness"
+Issues = "https://github.com/recharness/recharness/issues"
+
+[project.scripts]
+recharness = "recharness.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/recharness"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra"

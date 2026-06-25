@@ -1,0 +1,55 @@
+# RecHarness
+
+RecHarness is an agent-agnostic harness for making general-purpose agents more reliable product recommenders.
+
+General agents are becoming shopping interfaces, but they can recommend products that violate user constraints, hallucinate attributes, overfit vague preferences, or lack evidence. RecHarness provides the harness-level structure needed to make recommendation flows inspectable and testable.
+
+This foundation milestone includes:
+
+- typed product, preference, constraint, recommendation, verification, and trace schemas
+- deterministic local JSONL catalog loading
+- catalog validation and field coverage stats
+- a small backpack example catalog
+- pytest coverage for the foundation behavior
+
+Later milestones will add preference parsing, retrieval, ranking, recommendation verification, tracing, evaluation, and MCP integration.
+
+## Development
+
+The project is configured for `uv` and `hatchling`.
+
+```bash
+uv sync --extra dev
+uv run pytest
+```
+
+If `uv` is unavailable, use a local virtual environment:
+
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -e '.[dev]'
+.venv/bin/python -m pytest
+```
+
+## Catalog Example
+
+```python
+from recharness import JsonlCatalog
+
+catalog = JsonlCatalog.load("examples/backpacks/catalog.jsonl")
+report = catalog.validate()
+stats = catalog.stats()
+
+print(report.product_count)
+print(stats.field_coverage["price"])
+```
+
+Catalog rows are JSON objects that validate as `ProductItem` records:
+
+```json
+{"product_id":"bag_001","title":"UrbanLite Commuter Backpack 22L","category":"backpack","price":{"amount":899,"currency":"CNY"},"attributes":{"laptop_size_inches":14,"weight_kg":0.85}}
+```
+
+## License
+
+MIT
