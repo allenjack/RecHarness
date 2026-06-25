@@ -92,7 +92,10 @@ print(report.status)
 ```python
 from recharness import RecHarness
 
-harness = RecHarness.from_jsonl_catalog("examples/backpacks/catalog.jsonl")
+harness = RecHarness.from_jsonl_catalog(
+    "examples/backpacks/catalog.jsonl",
+    trace_path="runs/assist_traces.jsonl",
+)
 
 report = harness.verify_agent_recommendation(
     user_query="Find a commuting backpack under 1500 RMB that fits a 14-inch laptop.",

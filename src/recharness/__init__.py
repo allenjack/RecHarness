@@ -31,6 +31,7 @@ from recharness.schema import (
     VerificationReport,
     Violation,
 )
+from recharness.tracing import JsonlTraceLogger
 from recharness.verification import ClaimVerifier, ConstraintVerifier, RecommendationVerifier
 
 __all__ = [
@@ -50,6 +51,7 @@ __all__ = [
     "EvalRunner",
     "HybridRetriever",
     "JsonlCatalog",
+    "JsonlTraceLogger",
     "KeywordRetriever",
     "Money",
     "Preference",
