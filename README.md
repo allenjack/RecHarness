@@ -4,7 +4,7 @@ RecHarness is an agent-agnostic harness for making general-purpose agents more r
 
 General agents are becoming shopping interfaces, but they can recommend products that violate user constraints, hallucinate attributes, overfit vague preferences, or lack evidence. RecHarness provides the harness-level structure needed to make recommendation flows inspectable and testable.
 
-This foundation milestone includes:
+This v0.1 release includes:
 
 - typed product, preference, constraint, recommendation, verification, and trace schemas
 - deterministic local JSONL catalog loading
@@ -13,11 +13,12 @@ This foundation milestone includes:
 - dot-path constraint verification against product records
 - deterministic keyword and attribute-filter retrieval
 - transparent simple ranking
-- a first `RecHarness.assist()` SDK flow
-- a small backpack example catalog
+- `RecHarness.assist()` and `verify_agent_recommendation()` SDK flows
+- CLI commands for catalog validation, assist, verify, eval, and optional MCP serving
+- JSONL trace logging
+- batch evaluation
+- a 50-product, 50-mission backpack benchmark fixture
 - pytest coverage for the foundation behavior
-
-Later milestones will add recommendation verification, tracing, evaluation, and MCP integration.
 
 ## Development
 
@@ -149,6 +150,12 @@ recharness eval \
 ```
 
 The eval command writes `metrics.json`, `leaderboard.csv`, and `traces.jsonl`.
+
+The checked-in backpack benchmark contains:
+
+- 50 catalog products
+- 50 recommendation missions
+- 50 baseline agent outputs covering valid, over-budget, hallucinated, and overstated-claim answers
 
 ## MCP Server
 

@@ -20,7 +20,8 @@ def test_mcp_tools_assist_returns_recommendation_bundle_dict():
         top_k=1,
     )
 
-    assert result["recommended"][0]["product"]["product_id"] == "bag_001"
+    assert result["recommended"][0]["product"]["category"] == "backpack"
+    assert result["recommended"][0]["violations"] == []
     assert result["trace_id"].startswith("assist_")
 
 

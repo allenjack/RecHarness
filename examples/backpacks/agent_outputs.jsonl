@@ -1,2 +1,50 @@
-{"mission_id":"backpack_001","agent_name":"baseline_agent","answer":"I recommend UrbanLite Commuter Backpack 22L. It costs 899 RMB and fits a 14-inch laptop."}
-{"mission_id":"backpack_002","agent_name":"baseline_agent","answer":"I recommend NorthPeak Office Pack 28L. It costs 1299 RMB and is fully waterproof."}
+{"mission_id":"backpack_001","agent_name":"benchmark_agent","answer":"I recommend CloudNine Benchmark Pack 08 25L. It costs 1595 RMB and fits a 16-inch laptop."}
+{"mission_id":"backpack_002","agent_name":"benchmark_agent","answer":"I recommend CivicGear Benchmark Pack 20 27L. It costs 1339 RMB and is fully waterproof."}
+{"mission_id":"backpack_003","agent_name":"benchmark_agent","answer":"I recommend AeroPack Benchmark Pack 16 32L. It costs 791 RMB and is good for commuting."}
+{"mission_id":"backpack_004","agent_name":"benchmark_agent","answer":"I recommend CivicGear Benchmark Pack 20 27L. It costs 1339 RMB and fits a 13-inch laptop."}
+{"mission_id":"backpack_005","agent_name":"benchmark_agent","answer":"I recommend AeroPack Benchmark Pack 06 19L. It costs 1321 RMB and is suitable for commuting."}
+{"mission_id":"backpack_006","agent_name":"benchmark_agent","answer":"I recommend UrbanLite Benchmark Pack 21 30L. It costs 1476 RMB and fits a 14-inch laptop."}
+{"mission_id":"backpack_007","agent_name":"benchmark_agent","answer":"I recommend NorthPeak Office Pack 28L. It costs 1299 RMB and is fully waterproof."}
+{"mission_id":"backpack_008","agent_name":"benchmark_agent","answer":"I recommend MetroCarry Benchmark Pack 45 34L. It costs 964 RMB and is good for commuting."}
+{"mission_id":"backpack_009","agent_name":"benchmark_agent","answer":"I recommend RainGuard Benchmark Pack 33 32L. It costs 1220 RMB and fits a 16-inch laptop."}
+{"mission_id":"backpack_010","agent_name":"benchmark_agent","answer":"I recommend PhantomPack Air 25L. It costs 999 RMB and is waterproof."}
+{"mission_id":"backpack_011","agent_name":"benchmark_agent","answer":"I recommend AeroPack Benchmark Pack 26 28L. It costs 2161 RMB and fits a 14-inch laptop."}
+{"mission_id":"backpack_012","agent_name":"benchmark_agent","answer":"I recommend FlexTrail Benchmark Pack 44 31L. It costs 827 RMB and is fully waterproof."}
+{"mission_id":"backpack_013","agent_name":"benchmark_agent","answer":"I recommend AeroPack Benchmark Pack 16 32L. It costs 791 RMB and is good for commuting."}
+{"mission_id":"backpack_014","agent_name":"benchmark_agent","answer":"I recommend MetroCarry Benchmark Pack 15 29L. It costs 654 RMB and fits a 13-inch laptop."}
+{"mission_id":"backpack_015","agent_name":"benchmark_agent","answer":"I recommend AeroPack Benchmark Pack 46 20L. It costs 1101 RMB and is suitable for commuting."}
+{"mission_id":"backpack_016","agent_name":"benchmark_agent","answer":"I recommend StoneBridge Benchmark Pack 47 23L. It costs 1238 RMB and fits a 15-inch laptop."}
+{"mission_id":"backpack_017","agent_name":"benchmark_agent","answer":"I recommend CloudNine Benchmark Pack 28 34L. It costs 535 RMB and is fully waterproof."}
+{"mission_id":"backpack_018","agent_name":"benchmark_agent","answer":"I recommend MetroCarry Benchmark Pack 45 34L. It costs 964 RMB and is good for commuting."}
+{"mission_id":"backpack_019","agent_name":"benchmark_agent","answer":"I recommend StoneBridge Benchmark Pack 17 18L. It costs 928 RMB and fits a 15-inch laptop."}
+{"mission_id":"backpack_020","agent_name":"benchmark_agent","answer":"I recommend PhantomPack Air 25L. It costs 999 RMB and is waterproof."}
+{"mission_id":"backpack_021","agent_name":"benchmark_agent","answer":"I recommend RainGuard Metro Pack 24L. It costs 1599 RMB and fits a 15-inch laptop."}
+{"mission_id":"backpack_022","agent_name":"benchmark_agent","answer":"I recommend AeroPack Benchmark Pack 16 32L. It costs 791 RMB and is fully waterproof."}
+{"mission_id":"backpack_023","agent_name":"benchmark_agent","answer":"I recommend AeroPack Benchmark Pack 16 32L. It costs 791 RMB and is good for commuting."}
+{"mission_id":"backpack_024","agent_name":"benchmark_agent","answer":"I recommend CivicGear Benchmark Pack 10 31L. It costs 1869 RMB and fits a 13-inch laptop."}
+{"mission_id":"backpack_025","agent_name":"benchmark_agent","answer":"I recommend AeroPack Benchmark Pack 06 19L. It costs 1321 RMB and is suitable for commuting."}
+{"mission_id":"backpack_026","agent_name":"benchmark_agent","answer":"I recommend DayForge Benchmark Pack 29 20L. It costs 672 RMB and fits a 17-inch laptop."}
+{"mission_id":"backpack_027","agent_name":"benchmark_agent","answer":"I recommend CloudNine Benchmark Pack 48 26L. It costs 1375 RMB and is fully waterproof."}
+{"mission_id":"backpack_028","agent_name":"benchmark_agent","answer":"I recommend MetroCarry Benchmark Pack 45 34L. It costs 964 RMB and is good for commuting."}
+{"mission_id":"backpack_029","agent_name":"benchmark_agent","answer":"I recommend FlexTrail Benchmark Pack 44 31L. It costs 827 RMB and fits a 17-inch laptop."}
+{"mission_id":"backpack_030","agent_name":"benchmark_agent","answer":"I recommend PhantomPack Air 25L. It costs 999 RMB and is waterproof."}
+{"mission_id":"backpack_031","agent_name":"benchmark_agent","answer":"I recommend MetroCarry Benchmark Pack 25 25L. It costs 2024 RMB and fits a 13-inch laptop."}
+{"mission_id":"backpack_032","agent_name":"benchmark_agent","answer":"I recommend NorthPeak Benchmark Pack 32 29L. It costs 1083 RMB and is fully waterproof."}
+{"mission_id":"backpack_033","agent_name":"benchmark_agent","answer":"I recommend AeroPack Benchmark Pack 16 32L. It costs 791 RMB and is good for commuting."}
+{"mission_id":"backpack_034","agent_name":"benchmark_agent","answer":"I recommend MetroCarry Benchmark Pack 05 33L. It costs 1184 RMB and fits a 13-inch laptop."}
+{"mission_id":"backpack_035","agent_name":"benchmark_agent","answer":"I recommend AeroPack Benchmark Pack 46 20L. It costs 1101 RMB and is suitable for commuting."}
+{"mission_id":"backpack_036","agent_name":"benchmark_agent","answer":"I recommend UrbanLite Commuter Backpack 22L. It costs 899 RMB and fits a 14-inch laptop."}
+{"mission_id":"backpack_037","agent_name":"benchmark_agent","answer":"I recommend CivicGear Benchmark Pack 20 27L. It costs 1339 RMB and is fully waterproof."}
+{"mission_id":"backpack_038","agent_name":"benchmark_agent","answer":"I recommend MetroCarry Benchmark Pack 45 34L. It costs 964 RMB and is good for commuting."}
+{"mission_id":"backpack_039","agent_name":"benchmark_agent","answer":"I recommend DayForge Benchmark Pack 29 20L. It costs 672 RMB and fits a 17-inch laptop."}
+{"mission_id":"backpack_040","agent_name":"benchmark_agent","answer":"I recommend PhantomPack Air 25L. It costs 999 RMB and is waterproof."}
+{"mission_id":"backpack_041","agent_name":"benchmark_agent","answer":"I recommend CivicGear Benchmark Pack 50 32L. It costs 1649 RMB and fits a 13-inch laptop."}
+{"mission_id":"backpack_042","agent_name":"benchmark_agent","answer":"I recommend NorthPeak Office Pack 28L. It costs 1299 RMB and is fully waterproof."}
+{"mission_id":"backpack_043","agent_name":"benchmark_agent","answer":"I recommend AeroPack Benchmark Pack 16 32L. It costs 791 RMB and is good for commuting."}
+{"mission_id":"backpack_044","agent_name":"benchmark_agent","answer":"I recommend FlexTrail Daypack 20L. It costs 699 RMB and fits a 13-inch laptop."}
+{"mission_id":"backpack_045","agent_name":"benchmark_agent","answer":"I recommend AeroPack Benchmark Pack 06 19L. It costs 1321 RMB and is suitable for commuting."}
+{"mission_id":"backpack_046","agent_name":"benchmark_agent","answer":"I recommend NorthPeak Benchmark Pack 32 29L. It costs 1083 RMB and fits a 15-inch laptop."}
+{"mission_id":"backpack_047","agent_name":"benchmark_agent","answer":"I recommend FlexTrail Benchmark Pack 44 31L. It costs 827 RMB and is fully waterproof."}
+{"mission_id":"backpack_048","agent_name":"benchmark_agent","answer":"I recommend MetroCarry Benchmark Pack 45 34L. It costs 964 RMB and is good for commuting."}
+{"mission_id":"backpack_049","agent_name":"benchmark_agent","answer":"I recommend StoneBridge Benchmark Pack 07 22L. It costs 1458 RMB and fits a 15-inch laptop."}
+{"mission_id":"backpack_050","agent_name":"benchmark_agent","answer":"I recommend PhantomPack Air 25L. It costs 999 RMB and is waterproof."}

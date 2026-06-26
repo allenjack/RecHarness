@@ -42,4 +42,6 @@ def test_hybrid_retriever_returns_keyword_ranked_products_that_pass_constraints(
 
     results = HybridRetriever().retrieve(need, catalog, top_k=3)
 
-    assert [result.product.product_id for result in results] == ["bag_001", "bag_002"]
+    assert len(results) == 3
+    assert all(result.product.price.amount <= 1500 for result in results)
+    assert all(result.product.attributes["laptop_size_inches"] >= 14 for result in results)

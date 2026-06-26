@@ -107,5 +107,5 @@ def test_example_backpack_catalog_loads_and_validates():
     stats = catalog.stats()
 
     assert report.is_valid is True
-    assert report.product_count == 4
+    assert report.product_count >= 50
     assert stats.field_coverage["attributes.laptop_size_inches"] == 1.0
