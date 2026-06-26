@@ -40,3 +40,25 @@ def test_cli_verify_reports_failure_for_bad_recommendation(capsys):
     assert exit_code == 1
     assert "FAIL" in captured.out
     assert "price.amount" in captured.out
+
+
+def test_cli_verify_prints_structured_claim_issues(capsys):
+    exit_code = main(
+        [
+            "verify",
+            "--catalog",
+            "examples/backpacks/catalog.jsonl",
+            "--query",
+            "Find a commuting backpack under 1500 RMB",
+            "--answer",
+            "I recommend NorthPeak Office Pack 28L. It costs 1299 RMB "
+            "and is fully waterproof.",
+        ]
+    )
+
+    captured = capsys.readouterr()
+
+    assert exit_code == 1
+    assert "Claim issues:" in captured.out
+    assert "water_resistance" in captured.out
+    assert "attributes.water_resistance" in captured.out

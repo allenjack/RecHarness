@@ -98,10 +98,20 @@ class Violation(RecHarnessModel):
     message: str
 
 
+class ClaimIssue(RecHarnessModel):
+    claim_type: str
+    severity: Literal["warning", "hard"] = "warning"
+    field: str
+    claimed_value: Any
+    observed_value: Any = None
+    message: str
+
+
 class VerificationReport(RecHarnessModel):
     status: Literal["pass", "fail", "warning"] = "pass"
     checks: list[ConstraintCheck] = Field(default_factory=list)
     violations: list[Violation] = Field(default_factory=list)
+    claim_issues: list[ClaimIssue] = Field(default_factory=list)
     unsupported_claims: list[str] = Field(default_factory=list)
     repair_suggestions: list[str] = Field(default_factory=list)
     summary: str | None = None

@@ -4,13 +4,14 @@ RecHarness is an agent-agnostic harness for making general-purpose agents more r
 
 General agents are becoming shopping interfaces, but they can recommend products that violate user constraints, hallucinate attributes, overfit vague preferences, or lack evidence. RecHarness provides the harness-level structure needed to make recommendation flows inspectable and testable.
 
-This v0.1 release includes:
+This v0.2 development version includes:
 
 - typed product, preference, constraint, recommendation, verification, and trace schemas
 - deterministic local JSONL catalog loading
 - catalog validation and field coverage stats
 - rule-based preference extraction for common shopping constraints
 - dot-path constraint verification against product records
+- structured claim verification for prices, laptop fit, water resistance, weight, and availability
 - deterministic keyword and attribute-filter retrieval
 - transparent simple ranking
 - `RecHarness.assist()` and `verify_agent_recommendation()` SDK flows
@@ -105,6 +106,7 @@ report = harness.verify_agent_recommendation(
 
 print(report.status)
 print(report.violations)
+print(report.claim_issues)
 ```
 
 ```bash
@@ -150,6 +152,8 @@ recharness eval \
 ```
 
 The eval command writes `metrics.json`, `leaderboard.csv`, and `traces.jsonl`.
+Trace records include structured verification reports, including `claim_issues`
+for factual claim diagnostics.
 
 The checked-in backpack benchmark contains:
 

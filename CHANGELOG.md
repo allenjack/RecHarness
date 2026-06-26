@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+Structured verification depth:
+
+- Added `ClaimIssue` and `VerificationReport.claim_issues` for typed claim diagnostics
+- Kept `VerificationReport.unsupported_claims` as a compatibility list of issue messages
+- Expanded claim verification for price, laptop fit, water resistance, weight, and availability claims
+- Made hard factual claim issues fail recommendation verification
+- Added structured claim issue output to `recharness verify`
+- Documented claim issues in schemas, evaluation traces, and README usage
+
 ## 0.1.0 - 2026-06-26
 
 Initial v0.1 release foundation:

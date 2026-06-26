@@ -28,13 +28,18 @@ Outputs:
 
 - `metrics.json`: aggregate rates
 - `leaderboard.csv`: per-agent metrics
-- `traces.jsonl`: per-mission verification records
+- `traces.jsonl`: per-mission verification records, including structured `claim_issues`
 
 Current metrics:
 
 - `product_groundedness_rate`
 - `hard_constraint_satisfaction_rate`
 - `unsupported_claim_rate`
+
+`unsupported_claim_rate` remains a compatibility metric based on the derived
+claim-message list. Use `report.claim_issues` in traces when you need typed
+claim diagnostics such as price mismatch, laptop-fit overclaim, availability
+overclaim, or water-resistance overstatement.
 
 Expected baseline fixture metrics:
 

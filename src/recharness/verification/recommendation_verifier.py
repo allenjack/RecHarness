@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-from recharness.schema import ProductItem, UserNeed, VerificationReport
+from recharness.schema import ClaimIssue, ProductItem, UserNeed, VerificationReport
 from recharness.verification.claim_verifier import ClaimVerifier
 from recharness.verification.constraint_verifier import ConstraintVerifier
 
@@ -29,6 +29,7 @@ class RecommendationVerifier:
         products = resolve_mentioned_products(agent_answer, catalog)
         checks = []
         violations = []
+        claim_issues: list[ClaimIssue] = []
         unsupported_claims: list[str] = []
         repair_suggestions: list[str] = []
 
@@ -43,25 +44,34 @@ class RecommendationVerifier:
             report = self.constraint_verifier.verify_product(product, need.hard_constraints)
             checks.extend(report.checks)
             violations.extend(report.violations)
-            unsupported_claims.extend(self.claim_verifier.verify_claims(product, agent_answer))
+            product_claim_issues = self.claim_verifier.verify_claims(product, agent_answer)
+            claim_issues.extend(product_claim_issues)
+            unsupported_claims.extend(issue.message for issue in product_claim_issues)
             if report.violations:
                 repair_suggestions.append(
                     f"Replace or qualify {product.title}; it violates parsed hard constraints."
                 )
+            if any(issue.severity == "hard" for issue in product_claim_issues):
+                repair_suggestions.append(
+                    f"Correct or remove hard factual claims about {product.title}."
+                )
 
         status = "pass"
-        if any(violation.severity == "hard" for violation in violations):
+        if any(violation.severity == "hard" for violation in violations) or any(
+            issue.severity == "hard" for issue in claim_issues
+        ):
             status = "fail"
-        elif unsupported_claims or violations:
+        elif claim_issues or violations:
             status = "warning"
 
         return VerificationReport(
             status=status,
             checks=checks,
             violations=violations,
+            claim_issues=claim_issues,
             unsupported_claims=unsupported_claims,
             repair_suggestions=repair_suggestions,
-            summary=_summary(status, products, violations, unsupported_claims),
+            summary=_summary(status, products, violations, claim_issues),
         )
 
 
@@ -77,11 +87,16 @@ def resolve_mentioned_products(
     ]
 
 
-def _summary(status, products, violations, unsupported_claims) -> str:
+def _summary(
+    status: str,
+    products: Sequence[ProductItem],
+    violations,
+    claim_issues: list[ClaimIssue],
+) -> str:
     titles = ", ".join(product.title for product in products)
     if status == "pass":
         return f"Resolved catalog recommendation passes verification: {titles}."
     return (
         f"Resolved catalog recommendation needs review: {titles}. "
-        f"violations={len(violations)}, unsupported_claims={len(unsupported_claims)}"
+        f"violations={len(violations)}, claim_issues={len(claim_issues)}"
     )

@@ -80,3 +80,4 @@ def test_cli_eval_writes_metrics_leaderboard_and_traces(tmp_path):
     assert (out_dir / "metrics.json").exists()
     assert (out_dir / "leaderboard.csv").exists()
     assert (out_dir / "traces.jsonl").exists()
+    assert "claim_issues" in (out_dir / "traces.jsonl").read_text(encoding="utf-8")

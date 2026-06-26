@@ -107,6 +107,13 @@ def _verify_recommendation(
         print("Violations:")
         for violation in report.violations:
             print(f"- {violation.message}")
+    if report.claim_issues:
+        print("Claim issues:")
+        for issue in report.claim_issues:
+            print(
+                f"- [{issue.severity}] {issue.claim_type} "
+                f"{issue.field}: {issue.message}"
+            )
     if report.unsupported_claims:
         print("Unsupported claims:")
         for claim in report.unsupported_claims:

@@ -18,6 +18,7 @@ from recharness.retrieval import (
     ScoredProduct,
 )
 from recharness.schema import (
+    ClaimIssue,
     Constraint,
     ConstraintCheck,
     Evidence,
@@ -40,6 +41,7 @@ __all__ = [
     "CatalogStats",
     "CatalogValidationReport",
     "ClaimVerifier",
+    "ClaimIssue",
     "AgentOutput",
     "Constraint",
     "ConstraintCheck",
