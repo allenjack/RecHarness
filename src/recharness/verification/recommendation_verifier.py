@@ -278,16 +278,20 @@ def _unresolved_mentions(
 def _recommendation_phrases(agent_answer: str) -> list[tuple[str, int, int]]:
     phrases: list[tuple[str, int, int]] = []
     pattern = re.compile(
-        r"(?:recommend|推荐)\s+(?:the\s+)?([A-Z][A-Za-z0-9]*(?:[ -][A-Za-z0-9]+){0,5})"
+        r"(?:\bi\s+recommend\b|\brecommend\b|我推荐|推荐)\s+(?:the\s+)?(.{1,80})",
+        re.I,
     )
     for match in pattern.finditer(agent_answer):
+        raw = match.group(1)
+        leading = len(raw) - len(raw.lstrip())
+        raw = raw.lstrip()
         text = re.split(
-            r"\s+(?:costs?|is|fits?|and)\b|[。.!?]",
-            match.group(1),
+            r"\s+(?:costs?|is|fits?|and)\b|(?:售价|价格|可以|能|适合)|[，,。.!?]",
+            raw,
             maxsplit=1,
         )[0].strip()
         if text:
-            start = match.start(1)
+            start = match.start(1) + leading
             end = start + len(text)
             phrases.append((text, start, end))
     return phrases

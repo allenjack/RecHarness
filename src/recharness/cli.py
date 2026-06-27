@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
@@ -24,6 +25,9 @@ def main(argv: list[str] | None = None) -> int:
     verify_parser = subparsers.add_parser("verify")
     verify_parser.add_argument("--catalog", required=True)
     verify_parser.add_argument("--query", required=True)
+    verify_parser.add_argument("--json", action="store_true")
+    verify_parser.add_argument("--trace-path")
+    verify_parser.add_argument("--no-fail-on-warning", action="store_true")
     answer_group = verify_parser.add_mutually_exclusive_group(required=True)
     answer_group.add_argument("--answer")
     answer_group.add_argument("--answer-file")
@@ -32,6 +36,8 @@ def main(argv: list[str] | None = None) -> int:
     assist_parser.add_argument("--catalog", required=True)
     assist_parser.add_argument("--query", required=True)
     assist_parser.add_argument("--top-k", type=int, default=5)
+    assist_parser.add_argument("--json", action="store_true")
+    assist_parser.add_argument("--trace-path")
 
     eval_parser = subparsers.add_parser("eval")
     eval_parser.add_argument("--catalog", required=True)
@@ -49,9 +55,23 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "catalog" and args.catalog_command == "validate":
         return _validate_catalog(args.catalog_path)
     if args.command == "verify":
-        return _verify_recommendation(args.catalog, args.query, args.answer, args.answer_file)
+        return _verify_recommendation(
+            args.catalog,
+            args.query,
+            args.answer,
+            args.answer_file,
+            json_output=args.json,
+            trace_path=args.trace_path,
+            no_fail_on_warning=args.no_fail_on_warning,
+        )
     if args.command == "assist":
-        return _assist(args.catalog, args.query, args.top_k)
+        return _assist(
+            args.catalog,
+            args.query,
+            args.top_k,
+            json_output=args.json,
+            trace_path=args.trace_path,
+        )
     if args.command == "eval":
         return _eval(args.catalog, args.missions, args.agent_outputs, args.out)
     if args.command == "mcp" and args.mcp_command == "serve":
@@ -90,15 +110,22 @@ def _verify_recommendation(
     query: str,
     answer: str | None,
     answer_file: str | None,
+    json_output: bool = False,
+    trace_path: str | None = None,
+    no_fail_on_warning: bool = False,
 ) -> int:
     try:
-        harness = RecHarness.from_jsonl_catalog(catalog_path)
+        harness = RecHarness.from_jsonl_catalog(catalog_path, trace_path=trace_path)
     except CatalogLoadError as exc:
         print(f"Catalog invalid: {exc}", file=sys.stderr)
         return 1
 
     agent_answer = answer if answer is not None else Path(answer_file).read_text(encoding="utf-8")
     report = harness.verify_agent_recommendation(query, agent_answer)
+
+    if json_output:
+        _print_json(report.model_dump(mode="json"))
+        return _verify_exit_code(report.status, no_fail_on_warning)
 
     print(report.status.upper())
     if report.summary:
@@ -123,17 +150,34 @@ def _verify_recommendation(
         for suggestion in report.repair_suggestions:
             print(f"- {suggestion}")
 
-    return 0 if report.status == "pass" else 1
+    return _verify_exit_code(report.status, no_fail_on_warning)
 
 
-def _assist(catalog_path: str, query: str, top_k: int) -> int:
+def _assist(
+    catalog_path: str,
+    query: str,
+    top_k: int,
+    json_output: bool = False,
+    trace_path: str | None = None,
+) -> int:
     try:
-        harness = RecHarness.from_jsonl_catalog(catalog_path)
+        harness = RecHarness.from_jsonl_catalog(catalog_path, trace_path=trace_path)
     except CatalogLoadError as exc:
         print(f"Catalog invalid: {exc}", file=sys.stderr)
         return 1
 
     bundle = harness.assist(query, top_k=top_k)
+
+    if json_output:
+        _print_json(bundle.model_dump(mode="json"))
+        return 0
+
+    print("Parsed need")
+    print(f"- category: {bundle.user_need.category or 'unknown'}")
+    scenarios = ", ".join(bundle.user_need.scenario) if bundle.user_need.scenario else "none"
+    print(f"- scenarios: {scenarios}")
+    if bundle.constraint_report is not None:
+        print(f"- constraint report: {bundle.constraint_report.status}")
 
     print("Top recommendations")
     for index, candidate in enumerate(bundle.recommended, start=1):
@@ -145,11 +189,30 @@ def _assist(catalog_path: str, query: str, top_k: int) -> int:
         if candidate.violations:
             print(f"   Risks: {len(candidate.violations)} constraint violation(s)")
 
+    if bundle.rejected:
+        print("Rejected products")
+        for candidate in bundle.rejected:
+            print(f"- {candidate.product.title}")
+            for violation in candidate.violations:
+                print(f"  - {violation.message}")
+
     if bundle.summary_for_agent:
         print("Summary for agent")
         print(bundle.summary_for_agent)
 
     return 0
+
+
+def _verify_exit_code(status: str, no_fail_on_warning: bool) -> int:
+    if status == "pass":
+        return 0
+    if status == "warning" and no_fail_on_warning:
+        return 0
+    return 1
+
+
+def _print_json(payload: dict) -> None:
+    print(json.dumps(payload, ensure_ascii=False))
 
 
 def _eval(catalog_path: str, missions_path: str, outputs_path: str, out_dir: str) -> int:

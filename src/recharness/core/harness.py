@@ -92,8 +92,53 @@ class RecHarness:
         return bundle
 
     def verify_agent_recommendation(self, user_query: str, agent_answer: str):
+        trace_id = f"verify_{uuid4().hex}"
         need = self.parser.parse(user_query)
-        return self.recommendation_verifier.verify(need, agent_answer, self.catalog)
+        self._trace(trace_id, 1, "parse_preferences", need.model_dump(mode="json"))
+        report = self.recommendation_verifier.verify(need, agent_answer, self.catalog)
+        self._trace(
+            trace_id,
+            2,
+            "resolve_mentions",
+            {
+                "mentioned_products": report.mentioned_products,
+                "resolved_product_ids": [
+                    product.product_id for product in report.resolved_products
+                ],
+                "unresolved_mentions": report.unresolved_mentions,
+            },
+        )
+        self._trace(
+            trace_id,
+            3,
+            "verify_constraints",
+            {
+                "violations": [
+                    violation.model_dump(mode="json") for violation in report.violations
+                ],
+            },
+        )
+        self._trace(
+            trace_id,
+            4,
+            "claim_check",
+            {
+                "claim_issues": [
+                    issue.model_dump(mode="json") for issue in report.claim_issues
+                ],
+            },
+        )
+        self._trace(
+            trace_id,
+            5,
+            "verify_agent_answer",
+            {
+                "status": report.status,
+                "summary": report.summary,
+                "product_grounded": report.product_grounded,
+            },
+        )
+        return report
 
     def _trace(self, trace_id: str, step: int, event_type: str, payload: dict) -> None:
         if self.trace_logger is not None:

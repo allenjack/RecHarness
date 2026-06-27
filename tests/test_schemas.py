@@ -117,12 +117,32 @@ def test_recommendation_bundle_requires_a_trace_id():
         recommended=[candidate],
         rejected=[],
         comparison_axes=["price", "laptop fit"],
+        constraint_report=VerificationReport(status="pass", user_need=need),
         summary_for_agent="Recommend UrbanLite as the safest choice.",
         trace_id="trace_001",
     )
 
     assert bundle.recommended[0].product.product_id == "bag_001"
     assert bundle.trace_id == "trace_001"
+
+
+def test_recommendation_bundle_requires_constraint_report():
+    need = UserNeed(raw_query="Find a commuting backpack under 1500 RMB")
+    product = ProductItem(
+        product_id="bag_001",
+        title="UrbanLite Commuter Backpack 22L",
+        category="backpack",
+    )
+    candidate = RecommendationCandidate(product=product, final_score=0.9)
+
+    with pytest.raises(ValidationError):
+        RecommendationBundle(
+            user_need=need,
+            candidates=[candidate],
+            recommended=[candidate],
+            summary_for_agent="Recommend UrbanLite as the safest choice.",
+            trace_id="trace_001",
+        )
 
 
 def test_trace_event_defaults_timestamp_when_not_supplied():

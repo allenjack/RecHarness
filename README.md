@@ -120,6 +120,22 @@ recharness verify \
   --answer "I recommend RainGuard Metro Pack 24L. It costs 1599 RMB."
 ```
 
+```bash
+recharness verify \
+  --catalog examples/backpacks/catalog.jsonl \
+  --query "1500元以内、防水、适合通勤的双肩包" \
+  --answer "我推荐 NorthPeak Office Pack 28L，售价1299元，完全防水，而且很轻量。" \
+  --json
+```
+
+```bash
+recharness verify \
+  --catalog examples/backpacks/catalog.jsonl \
+  --query "Find a commuting backpack under 1500 RMB" \
+  --answer "I recommend UrbanLite Commuter Backpack 22L. It costs 899 RMB." \
+  --trace-path runs/verify.jsonl
+```
+
 ## Assist Flow
 
 ```python
@@ -145,6 +161,21 @@ recharness assist \
   --top-k 2
 ```
 
+```bash
+recharness assist \
+  --catalog examples/backpacks/catalog.jsonl \
+  --query "1500元以内，适合通勤，能放14寸电脑，不要太商务，最好防水、轻量的双肩包" \
+  --top-k 3 \
+  --json
+```
+
+```bash
+recharness assist \
+  --catalog examples/backpacks/catalog.jsonl \
+  --query "Find a commuting backpack under 1500 RMB" \
+  --trace-path runs/assist.jsonl
+```
+
 ## Evaluate Agent Outputs
 
 ```bash
@@ -168,8 +199,9 @@ The checked-in backpack benchmark contains:
 ## Current Limitations
 
 - No real-time price or inventory lookup
-- Rule-based preference parsing only
-- Deterministic product mention resolution
+- Rule-based parser covers common shopping constraints but is not comprehensive
+- Chinese and English claim checks are pattern-based
+- Product mention resolution is deterministic and may miss ambiguous references
 - No checkout, payment, or order workflow
 - No high-risk product suitability checking
 

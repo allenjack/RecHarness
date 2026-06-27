@@ -43,3 +43,24 @@ def test_recharness_assist_writes_trace_events_when_configured(tmp_path):
         "bundle",
     }
     assert all(row["trace_id"] == bundle.trace_id for row in rows)
+
+
+def test_recharness_verify_writes_trace_events_when_configured(tmp_path):
+    trace_path = tmp_path / "verify_traces.jsonl"
+    harness = RecHarness.from_jsonl_catalog(
+        "examples/backpacks/catalog.jsonl",
+        trace_path=trace_path,
+    )
+
+    report = harness.verify_agent_recommendation(
+        "Find a commuting backpack under 1500 RMB",
+        "I recommend UrbanLite Commuter Backpack 22L. It costs 899 RMB.",
+    )
+
+    rows = [json.loads(line) for line in trace_path.read_text(encoding="utf-8").splitlines()]
+
+    assert report.status == "pass"
+    assert "verify_agent_answer" in {row["event_type"] for row in rows}
+    final = rows[-1]
+    assert final["event_type"] == "verify_agent_answer"
+    assert final["payload"]["status"] == "pass"

@@ -104,3 +104,50 @@ def test_claim_verifier_allows_supported_claims():
     )
 
     assert issues == []
+
+
+def test_claim_verifier_detects_chinese_waterproof_overstatement():
+    issues = ClaimVerifier().verify_claims(
+        make_product(),
+        "Test Pack 完全防水。",
+    )
+
+    assert issues[0].claim_type == "water_resistance"
+    assert issues[0].issue_type == "overstated"
+    assert issues[0].product_id == "bag_test"
+
+
+def test_claim_verifier_detects_chinese_lightweight_and_ultralight_overclaims():
+    lightweight = ClaimVerifier().verify_claims(
+        make_product(),
+        "Test Pack 很轻量。",
+    )
+    ultralight = ClaimVerifier().verify_claims(
+        make_product(attributes={"weight_kg": 0.95}),
+        "Test Pack 是超轻背包。",
+    )
+
+    assert lightweight[0].claim_type == "weight"
+    assert lightweight[0].claimed_value == "lightweight"
+    assert ultralight[0].claim_type == "weight"
+    assert ultralight[0].claimed_value == "ultralight"
+
+
+def test_claim_verifier_detects_chinese_availability_false_claim():
+    issues = ClaimVerifier().verify_claims(
+        make_product(),
+        "Test Pack 现货有货，可以购买。",
+    )
+
+    assert issues[0].claim_type == "availability"
+    assert issues[0].severity == "hard"
+
+
+def test_claim_verifier_detects_chinese_laptop_fit_overclaim():
+    issues = ClaimVerifier().verify_claims(
+        make_product(),
+        "Test Pack 能放16寸电脑。",
+    )
+
+    assert issues[0].claim_type == "laptop_fit"
+    assert issues[0].claimed_value == 16

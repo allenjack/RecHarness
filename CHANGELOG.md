@@ -5,14 +5,19 @@
 Structured verification depth:
 
 - Added bundle construction that separates recommended candidates from rejected hard-violation candidates
+- Made `RecommendationBundle.constraint_report` required
 - Changed retrieval from hard filtering to soft constraint-aware scoring
 - Added explicit product resolution fields to `VerificationReport`
 - Added `ClaimIssue` and `VerificationReport.claim_issues` for typed claim diagnostics
 - Added product identity and issue type fields to claim issues
 - Kept `VerificationReport.unsupported_claims` as a compatibility list of issue messages
 - Expanded claim verification for price, laptop fit, water resistance, weight, and availability claims
+- Added Chinese claim checks for waterproof, lightweight, availability, and laptop-fit claims
 - Made claim verification product-local for multi-product answers
 - Made hard factual claim issues fail recommendation verification
+- Expanded rule-based parsing for more categories, scenarios, water resistance, weight, and capacity
+- Added CLI `--json`, `--trace-path`, and `--no-fail-on-warning` options
+- Added verify-mode trace events
 - Expanded evaluation records and metrics with groundedness, hallucination, hard-violation, claim-accuracy, and average-count fields
 - Added structured claim issue output to `recharness verify`
 - Documented claim issues in schemas, evaluation traces, and README usage

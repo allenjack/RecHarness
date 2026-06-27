@@ -144,7 +144,7 @@ class RecommendationBundle(RecHarnessModel):
     recommended: list[RecommendationCandidate]
     rejected: list[RecommendationCandidate] = Field(default_factory=list)
     comparison_axes: list[str] = Field(default_factory=list)
-    constraint_report: VerificationReport | None = None
+    constraint_report: VerificationReport
     clarification_questions: list[dict[str, Any]] = Field(default_factory=list)
     summary_for_agent: str
     trace_id: str

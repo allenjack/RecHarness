@@ -31,7 +31,7 @@ class ClaimVerifier:
 
 
 def _water_resistance_issues(product: ProductItem, answer: str) -> list[ClaimIssue]:
-    if "waterproof" not in answer:
+    if not _claims_waterproof(answer):
         return []
     observed = str(product.attributes.get("water_resistance", "unknown"))
     if observed.lower() == "waterproof":
@@ -104,13 +104,13 @@ def _laptop_fit_issues(product: ProductItem, answer: str) -> list[ClaimIssue]:
 
 
 def _weight_issues(product: ProductItem, answer: str) -> list[ClaimIssue]:
-    if "lightweight" not in answer and "ultralight" not in answer:
+    claimed = _claimed_weight(answer)
+    if claimed is None:
         return []
     observed = product.attributes.get("weight_kg")
     if observed is None:
         return []
-    threshold = 1.0 if "lightweight" in answer else 0.8
-    claimed = "lightweight" if "lightweight" in answer else "ultralight"
+    threshold = 0.8 if claimed == "ultralight" else 1.0
     if float(observed) <= threshold:
         return []
     return [
@@ -131,7 +131,7 @@ def _weight_issues(product: ProductItem, answer: str) -> list[ClaimIssue]:
 
 
 def _availability_issues(product: ProductItem, answer: str) -> list[ClaimIssue]:
-    if "in stock" not in answer and "available" not in answer:
+    if not _claims_available(answer):
         return []
     if product.availability == "in_stock":
         return []
@@ -150,6 +150,39 @@ def _availability_issues(product: ProductItem, answer: str) -> list[ClaimIssue]:
             ),
         )
     ]
+
+
+def _claims_waterproof(answer: str) -> bool:
+    return (
+        "waterproof" in answer
+        or "完全防水" in answer
+        or "必须防水" in answer
+        or "防水" in answer
+    )
+
+
+def _claimed_weight(answer: str) -> str | None:
+    if "ultralight" in answer or "超轻" in answer:
+        return "ultralight"
+    if (
+        "lightweight" in answer
+        or "轻量" in answer
+        or "轻便" in answer
+        or "不重" in answer
+    ):
+        return "lightweight"
+    return None
+
+
+def _claims_available(answer: str) -> bool:
+    return (
+        "in stock" in answer
+        or "available" in answer
+        or "有货" in answer
+        or "现货" in answer
+        or "可购买" in answer
+        or "库存充足" in answer
+    )
 
 
 def _claim_issue(product: ProductItem, **kwargs: Any) -> ClaimIssue:

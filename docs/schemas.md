@@ -11,7 +11,7 @@ Core schemas:
 - `Preference`: weighted soft or negative preference
 - `UserNeed`: parsed user query
 - `RecommendationCandidate`: scored product plus checks, risks, and evidence
-- `RecommendationBundle`: assist-mode output with recommended and rejected candidates
+- `RecommendationBundle`: assist-mode output with recommended and rejected candidates plus a required aggregate constraint report
 - `ClaimIssue`: structured factual claim diagnostic with type, severity, field, claimed value, observed value, and message
 - `VerificationReport`: constraint, product-resolution, and claim verification result
 - `TraceEvent`: JSONL trace event
