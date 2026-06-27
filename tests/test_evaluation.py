@@ -39,8 +39,19 @@ def test_eval_runner_scores_agent_outputs_against_missions(tmp_path):
 
     assert result.metrics["missions_total"] == 2
     assert result.metrics["product_groundedness_rate"] == 1.0
+    assert result.metrics["hallucinated_product_rate"] == 0.0
     assert result.metrics["hard_constraint_satisfaction_rate"] == 1.0
+    assert result.metrics["hard_violation_rate"] == 0.0
+    assert result.metrics["claim_accuracy_rate"] == 0.5
     assert result.metrics["unsupported_claim_rate"] == 0.5
+    assert result.metrics["overstated_claim_rate"] == 0.5
+    assert result.metrics["verification_pass_rate"] == 0.5
+    assert result.metrics["avg_violations_per_answer"] == 0.0
+    assert result.metrics["avg_claim_issues_per_answer"] == 0.5
+    assert result.records[0].resolved_product_ids == ["bag_001"]
+    assert result.records[0].unresolved_mentions == []
+    assert result.records[0].hard_violations == 0
+    assert result.records[1].claim_issues == 1
 
 
 def test_cli_eval_writes_metrics_leaderboard_and_traces(tmp_path):
@@ -80,4 +91,6 @@ def test_cli_eval_writes_metrics_leaderboard_and_traces(tmp_path):
     assert (out_dir / "metrics.json").exists()
     assert (out_dir / "leaderboard.csv").exists()
     assert (out_dir / "traces.jsonl").exists()
-    assert "claim_issues" in (out_dir / "traces.jsonl").read_text(encoding="utf-8")
+    trace_text = (out_dir / "traces.jsonl").read_text(encoding="utf-8")
+    assert "claim_issues" in trace_text
+    assert "resolved_product_ids" in trace_text

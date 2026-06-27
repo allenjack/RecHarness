@@ -25,6 +25,9 @@ def test_claim_verifier_returns_structured_waterproof_issue_and_compat_string():
     )
 
     assert issues[0].claim_type == "water_resistance"
+    assert issues[0].product_id == "bag_test"
+    assert issues[0].product_title == "Test Pack"
+    assert issues[0].issue_type == "overstated"
     assert issues[0].severity == "warning"
     assert issues[0].field == "attributes.water_resistance"
     assert issues[0].claimed_value == "waterproof"
@@ -39,6 +42,7 @@ def test_claim_verifier_detects_price_mismatch_as_hard_issue():
     )
 
     assert issues[0].claim_type == "price"
+    assert issues[0].issue_type == "incorrect"
     assert issues[0].severity == "hard"
     assert issues[0].field == "price.amount"
     assert issues[0].claimed_value == 999
@@ -77,6 +81,7 @@ def test_claim_verifier_detects_availability_overclaim():
     )
 
     assert issues[0].claim_type == "availability"
+    assert issues[0].issue_type == "incorrect"
     assert issues[0].severity == "hard"
     assert issues[0].field == "availability"
     assert issues[0].claimed_value == "in_stock"

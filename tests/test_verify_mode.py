@@ -19,6 +19,9 @@ def test_verify_agent_recommendation_reports_hard_constraint_violation():
         for violation in report.violations
     )
     assert any("RainGuard Metro Pack 24L" in suggestion for suggestion in report.repair_suggestions)
+    assert report.product_grounded is True
+    assert [product.product_id for product in report.resolved_products] == ["bag_003"]
+    assert report.unresolved_mentions == []
 
 
 def test_verify_agent_recommendation_reports_overstated_waterproof_claim():
@@ -69,3 +72,65 @@ def test_verify_agent_recommendation_fails_on_hard_claim_issue():
 
     assert report.status == "fail"
     assert any(issue.claim_type == "price" for issue in report.claim_issues)
+
+
+def test_verify_agent_recommendation_checks_claims_against_product_local_text():
+    harness = RecHarness.from_jsonl_catalog("examples/backpacks/catalog.jsonl")
+
+    report = harness.verify_agent_recommendation(
+        user_query="Find a commuting backpack under 1500 RMB",
+        agent_answer=(
+            "UrbanLite Commuter Backpack 22L costs 899 RMB. "
+            "NorthPeak Office Pack 28L costs 1299 RMB."
+        ),
+    )
+
+    assert report.status == "pass"
+    assert report.claim_issues == []
+
+
+def test_verify_agent_recommendation_only_applies_waterproof_claim_to_local_product():
+    harness = RecHarness.from_jsonl_catalog("examples/backpacks/catalog.jsonl")
+
+    report = harness.verify_agent_recommendation(
+        user_query="Find a commuting backpack under 1500 RMB",
+        agent_answer=(
+            "UrbanLite Commuter Backpack 22L costs 899 RMB. "
+            "NorthPeak Office Pack 28L is fully waterproof."
+        ),
+    )
+
+    assert report.status == "warning"
+    assert [issue.product_id for issue in report.claim_issues] == ["bag_002"]
+
+
+def test_verify_agent_recommendation_resolves_partial_title_and_product_id():
+    harness = RecHarness.from_jsonl_catalog("examples/backpacks/catalog.jsonl")
+
+    partial_report = harness.verify_agent_recommendation(
+        user_query="Find a commuting backpack under 1500 RMB",
+        agent_answer="I recommend UrbanLite Commuter. It costs 899 RMB.",
+    )
+    product_id_report = harness.verify_agent_recommendation(
+        user_query="Find a commuting backpack under 1500 RMB",
+        agent_answer="I recommend bag_001. It costs 899 RMB.",
+    )
+
+    assert [product.product_id for product in partial_report.resolved_products] == ["bag_001"]
+    assert [product.product_id for product in product_id_report.resolved_products] == ["bag_001"]
+    assert partial_report.product_grounded is True
+    assert product_id_report.product_grounded is True
+
+
+def test_verify_agent_recommendation_reports_unresolved_hallucinated_product():
+    harness = RecHarness.from_jsonl_catalog("examples/backpacks/catalog.jsonl")
+
+    report = harness.verify_agent_recommendation(
+        user_query="Find a commuting backpack under 1500 RMB",
+        agent_answer="I recommend PhantomPack Air 25L. It costs 999 RMB and is waterproof.",
+    )
+
+    assert report.status == "fail"
+    assert report.product_grounded is False
+    assert report.resolved_products == []
+    assert "PhantomPack Air 25L" in report.unresolved_mentions

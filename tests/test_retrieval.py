@@ -19,29 +19,34 @@ def test_keyword_retriever_scores_matching_products_from_need_text():
     assert "commute" in results[0].matched_terms
 
 
-def test_attribute_filter_retriever_removes_hard_constraint_violations():
+def test_attribute_filter_retriever_keeps_hard_constraint_violations_for_diagnosis():
     catalog = JsonlCatalog.load("examples/backpacks/catalog.jsonl")
     need = RuleBasedPreferenceParser().parse(
         "Find a commuting backpack under 1500 RMB that fits a 14-inch laptop"
     )
 
-    results = AttributeFilterRetriever().retrieve(need, catalog, top_k=10)
+    results = AttributeFilterRetriever().retrieve(need, catalog, top_k=len(catalog))
     product_ids = [result.product.product_id for result in results]
+    scores = {result.product.product_id: result.score for result in results}
 
     assert "bag_001" in product_ids
     assert "bag_002" in product_ids
-    assert "bag_003" not in product_ids
-    assert "bag_004" not in product_ids
+    assert "bag_003" in product_ids
+    assert "bag_004" in product_ids
+    assert scores["bag_001"] > scores["bag_003"]
+    assert scores["bag_001"] > scores["bag_004"]
 
 
-def test_hybrid_retriever_returns_keyword_ranked_products_that_pass_constraints():
+def test_hybrid_retriever_keeps_invalid_products_below_valid_products():
     catalog = JsonlCatalog.load("examples/backpacks/catalog.jsonl")
     need = RuleBasedPreferenceParser().parse(
         "Find a commuting backpack under 1500 RMB that fits a 14-inch laptop"
     )
 
-    results = HybridRetriever().retrieve(need, catalog, top_k=3)
+    results = HybridRetriever().retrieve(need, catalog, top_k=len(catalog))
+    product_ids = [result.product.product_id for result in results]
 
-    assert len(results) == 3
-    assert all(result.product.price.amount <= 1500 for result in results)
-    assert all(result.product.attributes["laptop_size_inches"] >= 14 for result in results)
+    assert "bag_003" in product_ids
+    assert "bag_004" in product_ids
+    assert product_ids.index("bag_001") < product_ids.index("bag_003")
+    assert product_ids.index("bag_001") < product_ids.index("bag_004")

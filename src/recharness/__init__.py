@@ -1,5 +1,6 @@
 """Public API for the RecHarness foundation package."""
 
+from recharness.bundle import BundleBuilder
 from recharness.catalog import (
     CatalogIssue,
     CatalogLoadError,
@@ -46,6 +47,7 @@ __all__ = [
     "Constraint",
     "ConstraintCheck",
     "AttributeFilterRetriever",
+    "BundleBuilder",
     "Evidence",
     "EvalMission",
     "EvalRecord",

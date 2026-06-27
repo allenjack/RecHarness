@@ -4,14 +4,17 @@ import pytest
 from pydantic import ValidationError
 
 from recharness import (
+    ClaimIssue,
     Constraint,
     Evidence,
     Money,
+    Preference,
     ProductItem,
     RecommendationBundle,
     RecommendationCandidate,
     TraceEvent,
     UserNeed,
+    VerificationReport,
 )
 
 
@@ -55,6 +58,48 @@ def test_constraint_supports_dot_path_fields():
 
     assert constraint.field == "price.amount"
     assert constraint.operator == "<="
+
+
+def test_preference_defaults_to_positive_polarity():
+    preference = Preference(field="attributes.weight_kg", value="lightweight")
+
+    assert preference.polarity == "positive"
+
+
+def test_verification_report_serializes_research_fields():
+    product = ProductItem(
+        product_id="bag_001",
+        title="UrbanLite Commuter Backpack 22L",
+        category="backpack",
+    )
+    issue = ClaimIssue(
+        product_id="bag_001",
+        product_title="UrbanLite Commuter Backpack 22L",
+        claim_type="price",
+        issue_type="incorrect",
+        severity="hard",
+        field="price.amount",
+        claimed_value=699,
+        observed_value=899,
+        message="Price mismatch.",
+    )
+
+    report = VerificationReport(
+        user_need=UserNeed(raw_query="Find a commuting backpack"),
+        mentioned_products=["UrbanLite Commuter Backpack 22L"],
+        resolved_products=[product],
+        unresolved_mentions=["PhantomPack Air 25L"],
+        product_grounded=True,
+        claim_issues=[issue],
+    )
+
+    dumped = report.model_dump()
+
+    assert dumped["product_grounded"] is True
+    assert dumped["resolved_products"][0]["product_id"] == "bag_001"
+    assert dumped["unresolved_mentions"] == ["PhantomPack Air 25L"]
+    assert dumped["claim_issues"][0]["product_id"] == "bag_001"
+    assert dumped["claim_issues"][0]["issue_type"] == "incorrect"
 
 
 def test_recommendation_bundle_requires_a_trace_id():

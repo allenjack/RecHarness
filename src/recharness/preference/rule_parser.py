@@ -105,6 +105,7 @@ class RuleBasedPreferenceParser:
                     field="attributes.style",
                     value="business",
                     weight=0.8,
+                    polarity="negative",
                     source="user",
                 )
             )

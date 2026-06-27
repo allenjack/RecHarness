@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 from uuid import uuid4
 
+from recharness.bundle import BundleBuilder
 from recharness.catalog import JsonlCatalog
 from recharness.preference import RuleBasedPreferenceParser
 from recharness.ranking import SimpleRanker
@@ -25,6 +26,7 @@ class RecHarness:
         ranker: SimpleRanker | None = None,
         verifier: ConstraintVerifier | None = None,
         recommendation_verifier: RecommendationVerifier | None = None,
+        bundle_builder: BundleBuilder | None = None,
         trace_logger: JsonlTraceLogger | None = None,
     ) -> None:
         self.catalog = catalog
@@ -35,6 +37,7 @@ class RecHarness:
         )
         self.retriever = retriever or HybridRetriever()
         self.ranker = ranker or SimpleRanker(verifier=self.verifier)
+        self.bundle_builder = bundle_builder or BundleBuilder()
         self.trace_logger = trace_logger
 
     @classmethod
@@ -50,7 +53,7 @@ class RecHarness:
         trace_id = f"assist_{uuid4().hex}"
         need = self.parser.parse(user_query)
         self._trace(trace_id, 1, "parse_preferences", need.model_dump(mode="json"))
-        retrieved = self.retriever.retrieve(need, self.catalog, top_k=max(top_k * 3, top_k))
+        retrieved = self.retriever.retrieve(need, self.catalog, top_k=len(self.catalog))
         self._trace(
             trace_id,
             2,
@@ -60,7 +63,7 @@ class RecHarness:
                 "product_ids": [item.product.product_id for item in retrieved],
             },
         )
-        ranked = self.ranker.rank(need, retrieved, top_k=top_k)
+        ranked = self.ranker.rank(need, retrieved, top_k=len(retrieved))
         self._trace(
             trace_id,
             3,
@@ -71,22 +74,20 @@ class RecHarness:
             },
         )
 
-        bundle = RecommendationBundle(
-            user_need=need,
-            candidates=ranked,
-            recommended=ranked,
-            rejected=[],
-            comparison_axes=_comparison_axes(need),
-            constraint_report=None,
-            clarification_questions=[],
-            summary_for_agent=_summary_for_agent(ranked),
-            trace_id=trace_id,
-        )
+        bundle = self.bundle_builder.build(need, ranked, top_k=top_k, trace_id=trace_id)
         self._trace(
             trace_id,
             4,
             "bundle",
-            {"recommended": [candidate.product.product_id for candidate in bundle.recommended]},
+            {
+                "recommended": [candidate.product.product_id for candidate in bundle.recommended],
+                "rejected": [candidate.product.product_id for candidate in bundle.rejected],
+                "constraint_report": (
+                    bundle.constraint_report.model_dump(mode="json")
+                    if bundle.constraint_report is not None
+                    else None
+                ),
+            },
         )
         return bundle
 
@@ -102,18 +103,3 @@ class RecHarness:
                 event_type=event_type,
                 payload=payload,
             )
-
-
-def _comparison_axes(need) -> list[str]:
-    axes = [constraint.field for constraint in need.hard_constraints]
-    axes.extend(preference.field for preference in need.negative_preferences)
-    return axes
-
-
-def _summary_for_agent(ranked) -> str:
-    if not ranked:
-        return "No catalog products matched the parsed hard constraints."
-
-    names = ", ".join(candidate.product.title for candidate in ranked[:3])
-    first = ranked[0].product.title
-    return f"Recommend {first} as the safest choice. Other viable options: {names}."

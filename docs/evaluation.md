@@ -33,8 +33,15 @@ Outputs:
 Current metrics:
 
 - `product_groundedness_rate`
+- `hallucinated_product_rate`
 - `hard_constraint_satisfaction_rate`
+- `hard_violation_rate`
+- `claim_accuracy_rate`
 - `unsupported_claim_rate`
+- `overstated_claim_rate`
+- `verification_pass_rate`
+- `avg_violations_per_answer`
+- `avg_claim_issues_per_answer`
 
 `unsupported_claim_rate` remains a compatibility metric based on the derived
 claim-message list. Use `report.claim_issues` in traces when you need typed
@@ -47,7 +54,14 @@ Expected baseline fixture metrics:
 {
   "missions_total": 50,
   "product_groundedness_rate": 0.9,
-  "hard_constraint_satisfaction_rate": 0.7,
-  "unsupported_claim_rate": 0.2
+  "hallucinated_product_rate": 0.1,
+  "hard_constraint_satisfaction_rate": 0.8,
+  "hard_violation_rate": 0.2,
+  "claim_accuracy_rate": 0.8,
+  "unsupported_claim_rate": 0.2,
+  "overstated_claim_rate": 0.2,
+  "verification_pass_rate": 0.5,
+  "avg_violations_per_answer": 0.26,
+  "avg_claim_issues_per_answer": 0.2
 }
 ```

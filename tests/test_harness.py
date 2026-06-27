@@ -17,6 +17,17 @@ def test_recharness_assist_returns_recommendation_bundle_for_example_catalog():
     assert bundle.recommended[0].product.product_id == "bag_001"
     assert all(candidate.violations == [] for candidate in bundle.recommended)
     assert bundle.recommended[0].final_score is not None
-    assert bundle.rejected == []
+    assert bundle.constraint_report is not None
+    assert bundle.constraint_report.status == "fail"
+    assert any(
+        candidate.product.product_id == "bag_003"
+        for candidate in bundle.rejected
+    )
+    assert all(
+        not any(violation.severity == "hard" for violation in candidate.violations)
+        for candidate in bundle.recommended
+    )
+    assert any(bundle.constraint_report.violations)
+    assert "waterproof" in bundle.summary_for_agent
     assert "UrbanLite" in bundle.summary_for_agent
     assert bundle.trace_id.startswith("assist_")

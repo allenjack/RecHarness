@@ -11,12 +11,18 @@ from recharness.schema import ClaimIssue, ProductItem
 class ClaimVerifier:
     """Check high-signal recommendation claims against catalog attributes."""
 
-    def verify_claims(self, product: ProductItem, agent_answer: str) -> list[ClaimIssue]:
-        answer = agent_answer.lower()
+    def verify_claims(
+        self,
+        product: ProductItem,
+        agent_answer: str,
+        local_text: str | None = None,
+    ) -> list[ClaimIssue]:
+        text = local_text if local_text is not None else agent_answer
+        answer = text.lower()
         issues: list[ClaimIssue] = []
 
         issues.extend(_water_resistance_issues(product, answer))
-        issues.extend(_price_issues(product, agent_answer))
+        issues.extend(_price_issues(product, text))
         issues.extend(_laptop_fit_issues(product, answer))
         issues.extend(_weight_issues(product, answer))
         issues.extend(_availability_issues(product, answer))
@@ -31,8 +37,10 @@ def _water_resistance_issues(product: ProductItem, answer: str) -> list[ClaimIss
     if observed.lower() == "waterproof":
         return []
     return [
-        ClaimIssue(
+        _claim_issue(
+            product,
             claim_type="water_resistance",
+            issue_type="overstated",
             severity="warning",
             field="attributes.water_resistance",
             claimed_value="waterproof",
@@ -53,8 +61,10 @@ def _price_issues(product: ProductItem, agent_answer: str) -> list[ClaimIssue]:
         observed = product.price.amount
         if abs(float(claimed) - float(observed)) > 0.01:
             issues.append(
-                ClaimIssue(
+                _claim_issue(
+                    product,
                     claim_type="price",
+                    issue_type="incorrect",
                     severity="hard",
                     field="price.amount",
                     claimed_value=claimed,
@@ -76,8 +86,10 @@ def _laptop_fit_issues(product: ProductItem, answer: str) -> list[ClaimIssue]:
     for claimed in _laptop_inches(answer):
         if float(claimed) > float(observed):
             issues.append(
-                ClaimIssue(
+                _claim_issue(
+                    product,
                     claim_type="laptop_fit",
+                    issue_type="overstated",
                     severity="hard",
                     field="attributes.laptop_size_inches",
                     claimed_value=claimed,
@@ -102,8 +114,10 @@ def _weight_issues(product: ProductItem, answer: str) -> list[ClaimIssue]:
     if float(observed) <= threshold:
         return []
     return [
-        ClaimIssue(
+        _claim_issue(
+            product,
             claim_type="weight",
+            issue_type="overstated",
             severity="warning",
             field="attributes.weight_kg",
             claimed_value=claimed,
@@ -122,8 +136,10 @@ def _availability_issues(product: ProductItem, answer: str) -> list[ClaimIssue]:
     if product.availability == "in_stock":
         return []
     return [
-        ClaimIssue(
+        _claim_issue(
+            product,
             claim_type="availability",
+            issue_type="incorrect",
             severity="hard",
             field="availability",
             claimed_value="in_stock",
@@ -134,6 +150,14 @@ def _availability_issues(product: ProductItem, answer: str) -> list[ClaimIssue]:
             ),
         )
     ]
+
+
+def _claim_issue(product: ProductItem, **kwargs: Any) -> ClaimIssue:
+    return ClaimIssue(
+        product_id=product.product_id,
+        product_title=product.title,
+        **kwargs,
+    )
 
 
 def _money_amounts(text: str) -> list[int | float]:

@@ -4,7 +4,7 @@ RecHarness is an agent-agnostic harness for making general-purpose agents more r
 
 General agents are becoming shopping interfaces, but they can recommend products that violate user constraints, hallucinate attributes, overfit vague preferences, or lack evidence. RecHarness provides the harness-level structure needed to make recommendation flows inspectable and testable.
 
-This v0.2 development version includes:
+The current package version is `0.1.0`. The main branch includes:
 
 - typed product, preference, constraint, recommendation, verification, and trace schemas
 - deterministic local JSONL catalog loading
@@ -12,14 +12,18 @@ This v0.2 development version includes:
 - rule-based preference extraction for common shopping constraints
 - dot-path constraint verification against product records
 - structured claim verification for prices, laptop fit, water resistance, weight, and availability
-- deterministic keyword and attribute-filter retrieval
+- deterministic local keyword and attribute-aware retrieval
 - transparent simple ranking
-- `RecHarness.assist()` and `verify_agent_recommendation()` SDK flows
+- `RecHarness.assist()` with recommended and rejected candidate bundles
+- `verify_agent_recommendation()` SDK flow
 - CLI commands for catalog validation, assist, verify, eval, and optional MCP serving
 - JSONL trace logging
 - batch evaluation
 - a 50-product, 50-mission backpack benchmark fixture
 - pytest coverage for the foundation behavior
+
+No external LLM API is required for the current deterministic harness. Retrieval
+is local and catalog-based. The MCP server is optional.
 
 ## Development
 
@@ -160,6 +164,14 @@ The checked-in backpack benchmark contains:
 - 50 catalog products
 - 50 recommendation missions
 - 50 baseline agent outputs covering valid, over-budget, hallucinated, and overstated-claim answers
+
+## Current Limitations
+
+- No real-time price or inventory lookup
+- Rule-based preference parsing only
+- Deterministic product mention resolution
+- No checkout, payment, or order workflow
+- No high-risk product suitability checking
 
 ## MCP Server
 

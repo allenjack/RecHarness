@@ -25,7 +25,7 @@ class SimpleRanker:
 
         for scored in candidates:
             report = self.verifier.verify_product(scored.product, need.hard_constraints)
-            constraint_score = 1.0 if report.status == "pass" else 0.0
+            constraint_score = _constraint_score(report.checks)
             preference_score = _negative_preference_score(scored.product.attributes, need)
             final_score = round(
                 0.5 * constraint_score
@@ -54,6 +54,13 @@ class SimpleRanker:
                 candidate.product.product_id,
             ),
         )[:top_k]
+
+
+def _constraint_score(checks) -> float:
+    if not checks:
+        return 1.0
+    satisfied = sum(1 for check in checks if check.satisfied)
+    return round(satisfied / len(checks), 6)
 
 
 def _negative_preference_score(attributes: dict[str, Any], need: UserNeed) -> float:

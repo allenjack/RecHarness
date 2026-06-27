@@ -55,6 +55,7 @@ class Preference(RecHarnessModel):
     field: str
     value: Any
     weight: float = Field(default=1.0, ge=0, le=1)
+    polarity: Literal["positive", "negative"] = "positive"
     source: Literal["user", "profile", "system", "inferred"] = "user"
 
 
@@ -99,7 +100,10 @@ class Violation(RecHarnessModel):
 
 
 class ClaimIssue(RecHarnessModel):
+    product_id: str | None = None
+    product_title: str | None = None
     claim_type: str
+    issue_type: Literal["unsupported", "overstated", "incorrect"] | None = None
     severity: Literal["warning", "hard"] = "warning"
     field: str
     claimed_value: Any
@@ -109,6 +113,11 @@ class ClaimIssue(RecHarnessModel):
 
 class VerificationReport(RecHarnessModel):
     status: Literal["pass", "fail", "warning"] = "pass"
+    user_need: UserNeed | None = None
+    mentioned_products: list[str] = Field(default_factory=list)
+    resolved_products: list[ProductItem] = Field(default_factory=list)
+    unresolved_mentions: list[str] = Field(default_factory=list)
+    product_grounded: bool = False
     checks: list[ConstraintCheck] = Field(default_factory=list)
     violations: list[Violation] = Field(default_factory=list)
     claim_issues: list[ClaimIssue] = Field(default_factory=list)

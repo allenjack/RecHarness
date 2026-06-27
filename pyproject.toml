@@ -43,8 +43,8 @@ mcp = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/recharness/recharness"
-Issues = "https://github.com/recharness/recharness/issues"
+Homepage = "https://github.com/allenjack/RecHarness"
+Issues = "https://github.com/allenjack/RecHarness/issues"
 
 [project.scripts]
 recharness = "recharness.cli:main"
