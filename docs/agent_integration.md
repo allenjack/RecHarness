@@ -5,11 +5,19 @@ product catalog.
 
 Recommended loop:
 
-1. Call `assist` with the user query.
-2. Use the `RecommendationBundle` to draft an answer.
-3. Call `verify` before returning the final response.
-4. If status is `warning` or `fail`, repair or qualify the answer.
-5. Return the grounded answer.
+1. List available catalogs.
+2. Select the most appropriate domain.
+3. Call `assist` with the user query and explicit domain.
+4. Use the `RecommendationBundle` to draft an answer.
+5. Call `verify` with the same explicit domain before returning the final response.
+6. If status is `warning` or `fail`, repair or qualify the answer.
+7. Return the grounded answer.
+
+For best reliability, general agents should call `recharness_list_catalogs`,
+choose a domain, and pass `domain` explicitly to assist and verify calls. If no
+domain is provided, RecHarness tries parsed category routing and then
+default-catalog fallback. That is convenient, but less reliable for ambiguous
+queries.
 
 SDK sketch:
 
@@ -17,6 +25,7 @@ SDK sketch:
 from recharness import AgentHarnessRouter, AssistRequest, VerifyRequest
 
 router = AgentHarnessRouter.from_config_file("examples/mcp/catalogs.json")
+catalogs = router.list_catalogs()
 
 assist = router.assist(
     AssistRequest(

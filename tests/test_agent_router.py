@@ -14,14 +14,27 @@ def test_agent_router_routes_by_explicit_domain_and_caches_harnesses():
     )
     router.assist(AssistRequest(user_query="Find ANC headphones", domain="headphones"))
 
-    assert response.status == "ok"
+    assert response.status == "warning"
     assert response.domain == "headphones"
     assert response.bundle is not None
     assert all(
         candidate.product.category == "headphones"
         for candidate in response.bundle.recommended
     )
-    assert list(router._harness_cache) == ["headphones"]
+    assert list(router._harness_cache) == [("headphones", "full")]
+
+
+def test_agent_router_assist_status_ok_without_diagnostics():
+    router = AgentHarnessRouter.from_config_file("examples/mcp/catalogs.json")
+
+    response = router.assist(
+        AssistRequest(user_query="Find headphones", domain="headphones", top_k=2)
+    )
+
+    assert response.status == "ok"
+    assert response.warnings == []
+    assert response.bundle is not None
+    assert response.bundle.rejected == []
 
 
 def test_agent_router_routes_by_parsed_category_and_default_fallback():
@@ -34,7 +47,7 @@ def test_agent_router_routes_by_parsed_category_and_default_fallback():
     assert parsed.domain == "headphones"
     assert parsed.user_need is not None
     assert parsed.user_need.category == "headphones"
-    assert fallback.status == "ok"
+    assert fallback.status == "warning"
     assert fallback.domain == "backpacks"
 
 
@@ -57,6 +70,55 @@ def test_agent_router_unknown_domain_and_no_route_return_error_envelopes():
     assert unknown.errors == ["Unknown domain: shoes"]
     assert no_route.status == "error"
     assert "No catalog route" in no_route.errors[0]
+
+
+def test_agent_router_caches_harnesses_by_domain_and_variant():
+    router = AgentHarnessRouter.from_config_file("examples/mcp/catalogs.json")
+
+    router.assist(AssistRequest(user_query="Find headphones", domain="headphones"))
+    full_first = router._harness_cache[("headphones", "full")]
+    router.assist(AssistRequest(user_query="Find ANC headphones", domain="headphones"))
+    full_second = router._harness_cache[("headphones", "full")]
+
+    router.assist(
+        AssistRequest(
+            user_query="Find headphones",
+            domain="headphones",
+            variant="keyword_only",
+        )
+    )
+    keyword_first = router._harness_cache[("headphones", "keyword_only")]
+    router.assist(
+        AssistRequest(
+            user_query="Find ANC headphones",
+            domain="headphones",
+            variant="keyword_only",
+        )
+    )
+    keyword_second = router._harness_cache[("headphones", "keyword_only")]
+
+    assert full_first is full_second
+    assert keyword_first is keyword_second
+    assert full_first is not keyword_first
+    assert sorted(router._harness_cache) == [
+        ("headphones", "full"),
+        ("headphones", "keyword_only"),
+    ]
+
+
+def test_agent_router_unknown_variant_returns_error_envelope():
+    router = AgentHarnessRouter.from_config_file("examples/mcp/catalogs.json")
+
+    response = router.assist(
+        AssistRequest(
+            user_query="Find headphones",
+            domain="headphones",
+            variant="unknown",
+        )
+    )
+
+    assert response.status == "error"
+    assert "Unknown harness variant" in response.errors[0]
 
 
 def test_agent_router_verify_uses_stable_error_and_detects_overclaim():

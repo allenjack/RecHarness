@@ -24,6 +24,19 @@ Tools:
 - `recharness_assist`
 - `recharness_verify_recommendation`
 
+Recommended MCP flow:
+
+1. Call `recharness_list_catalogs`.
+2. Select the most appropriate domain.
+3. Call `recharness_assist(user_query="...", domain="headphones")`.
+4. Draft the answer from the returned bundle.
+5. Call `recharness_verify_recommendation(user_query="...", domain="headphones", agent_answer="...")`.
+
+For best reliability, agents should pass `domain` explicitly. If no domain is
+provided, RecHarness tries parsed category routing and then default-catalog
+fallback. This fallback is useful for convenience but can be less reliable for
+ambiguous queries.
+
 Requests use the stable schemas:
 
 - `ParseRequest`

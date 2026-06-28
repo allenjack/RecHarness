@@ -1,3 +1,6 @@
+import pytest
+from pydantic import ValidationError
+
 from recharness import AssistRequest, AssistResponse, ParseRequest, VerifyResponse
 
 
@@ -29,3 +32,14 @@ def test_tool_error_envelopes_do_not_need_exception_objects():
     assert parse.domain is None
     assert verify.report is None
     assert verify.model_dump(mode="json")["errors"] == ["No route could be resolved"]
+
+
+def test_assist_request_top_k_bounds():
+    assert AssistRequest(user_query="Find headphones").top_k == 5
+    assert AssistRequest(user_query="Find headphones", top_k=1).top_k == 1
+    assert AssistRequest(user_query="Find headphones", top_k=20).top_k == 20
+
+    with pytest.raises(ValidationError):
+        AssistRequest(user_query="Find headphones", top_k=0)
+    with pytest.raises(ValidationError):
+        AssistRequest(user_query="Find headphones", top_k=21)

@@ -17,7 +17,7 @@ from recharness.schema import (
 class AssistRequest(RecHarnessModel):
     user_query: str
     domain: str | None = None
-    top_k: int = 5
+    top_k: int = Field(default=5, ge=1, le=20)
     include_rejected: bool = True
     variant: str = "full"
 

@@ -32,7 +32,7 @@ class AgentHarnessRouter:
         self.catalog_config = catalog_config
         self.trace_path = trace_path
         self._parser = RuleBasedPreferenceParser()
-        self._harness_cache: dict[str, RecHarness] = {}
+        self._harness_cache: dict[tuple[str, str], RecHarness] = {}
 
     @classmethod
     def from_config_file(
@@ -70,8 +70,13 @@ class AgentHarnessRouter:
                 warnings.append(
                     bundle.constraint_report.summary or "Constraint diagnostics present"
                 )
+            if bundle.rejected:
+                warnings.append(
+                    f"{len(bundle.rejected)} retrieved candidate(s) were rejected by "
+                    "constraint checks."
+                )
             return AssistResponse(
-                status="ok",
+                status="warning" if warnings else "ok",
                 domain=route.domain,
                 bundle=bundle,
                 warnings=warnings,
@@ -107,12 +112,11 @@ class AgentHarnessRouter:
         }
 
     def _harness_for(self, domain: str, variant: str = "full") -> RecHarness:
-        if variant != "full":
-            return self._build_harness(domain, variant=variant)
-        cached = self._harness_cache.get(domain)
+        cache_key = (domain, variant)
+        cached = self._harness_cache.get(cache_key)
         if cached is None:
             cached = self._build_harness(domain, variant=variant)
-            self._harness_cache[domain] = cached
+            self._harness_cache[cache_key] = cached
         return cached
 
     def _build_harness(self, domain: str, variant: str = "full") -> RecHarness:

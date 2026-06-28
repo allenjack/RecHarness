@@ -187,6 +187,7 @@ response envelopes across multiple local catalogs:
 from recharness import AgentHarnessRouter, AssistRequest, VerifyRequest
 
 router = AgentHarnessRouter.from_config_file("examples/mcp/catalogs.json")
+catalogs = router.list_catalogs()
 
 assist = router.assist(
     AssistRequest(
@@ -204,6 +205,12 @@ verify = router.verify(
     )
 )
 ```
+
+For best reliability, general agents should list catalogs first, choose the
+most appropriate domain, and pass `domain` explicitly to assist and verify
+calls. If no domain is provided, RecHarness tries parsed category routing and
+then default-catalog fallback, which is convenient but less reliable for
+ambiguous queries.
 
 See `docs/agent_integration.md`, `docs/mcp_config.md`, and
 `docs/domain_adapters.md` for integration details.
