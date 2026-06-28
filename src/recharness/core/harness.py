@@ -3,13 +3,15 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 from uuid import uuid4
 
 from recharness.bundle import BundleBuilder
 from recharness.catalog import JsonlCatalog
+from recharness.core.config import HarnessVariant
 from recharness.preference import RuleBasedPreferenceParser
 from recharness.ranking import SimpleRanker
-from recharness.retrieval import HybridRetriever
+from recharness.retrieval import AttributeFilterRetriever, HybridRetriever, KeywordRetriever
 from recharness.schema import RecommendationBundle
 from recharness.tracing import JsonlTraceLogger
 from recharness.verification import ConstraintVerifier, RecommendationVerifier
@@ -22,7 +24,7 @@ class RecHarness:
         self,
         catalog: JsonlCatalog,
         parser: RuleBasedPreferenceParser | None = None,
-        retriever: HybridRetriever | None = None,
+        retriever: Any | None = None,
         ranker: SimpleRanker | None = None,
         verifier: ConstraintVerifier | None = None,
         recommendation_verifier: RecommendationVerifier | None = None,
@@ -44,10 +46,16 @@ class RecHarness:
     def from_jsonl_catalog(
         cls,
         path: str | Path,
+        variant: str | Path = "full",
         trace_path: str | Path | None = None,
     ) -> RecHarness:
+        variant, trace_path = _normalize_variant_and_trace_path(variant, trace_path)
         trace_logger = JsonlTraceLogger(trace_path) if trace_path is not None else None
-        return cls(catalog=JsonlCatalog.load(path), trace_logger=trace_logger)
+        return cls(
+            catalog=JsonlCatalog.load(path),
+            retriever=_retriever_for_variant(variant),
+            trace_logger=trace_logger,
+        )
 
     def assist(self, user_query: str, top_k: int = 5) -> RecommendationBundle:
         trace_id = f"assist_{uuid4().hex}"
@@ -148,3 +156,25 @@ class RecHarness:
                 event_type=event_type,
                 payload=payload,
             )
+
+
+def _normalize_variant_and_trace_path(
+    variant: str | Path,
+    trace_path: str | Path | None,
+) -> tuple[str, str | Path | None]:
+    if isinstance(variant, Path):
+        return "full", variant if trace_path is None else trace_path
+    if trace_path is None and ("/" in variant or variant.endswith(".jsonl")):
+        return "full", variant
+    return variant, trace_path
+
+
+def _retriever_for_variant(variant: str) -> Any:
+    parsed = HarnessVariant.parse(variant)
+    if parsed == HarnessVariant.FULL:
+        return HybridRetriever()
+    if parsed == HarnessVariant.KEYWORD_ONLY:
+        return KeywordRetriever()
+    if parsed == HarnessVariant.CONSTRAINT_ONLY:
+        return AttributeFilterRetriever()
+    raise ValueError(f"Unknown harness variant '{variant}'")

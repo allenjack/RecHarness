@@ -26,7 +26,7 @@ class SimpleRanker:
         for scored in candidates:
             report = self.verifier.verify_product(scored.product, need.hard_constraints)
             constraint_score = _constraint_score(report.checks)
-            preference_score = _negative_preference_score(scored.product.attributes, need)
+            preference_score = _preference_score(scored.product.attributes, need)
             final_score = round(
                 0.5 * constraint_score
                 + 0.3 * scored.score
@@ -61,6 +61,54 @@ def _constraint_score(checks) -> float:
         return 1.0
     satisfied = sum(1 for check in checks if check.satisfied)
     return round(satisfied / len(checks), 6)
+
+
+def _preference_score(attributes: dict[str, Any], need: UserNeed) -> float:
+    positive_score = _positive_preference_score(attributes, need)
+    negative_score = _negative_preference_score(attributes, need)
+    if not need.soft_preferences:
+        return negative_score
+    return round(0.7 * positive_score + 0.3 * negative_score, 6)
+
+
+def _positive_preference_score(attributes: dict[str, Any], need: UserNeed) -> float:
+    if not need.soft_preferences:
+        return 1.0
+    scores: list[float] = []
+    for preference in need.soft_preferences:
+        observed = _resolve_attribute_path(attributes, preference.field)
+        scores.append(_positive_match_score(observed, preference.field, preference.value))
+    return round(sum(scores) / len(scores), 6)
+
+
+def _positive_match_score(observed: Any, field: str, expected: Any) -> float:
+    if field == "attributes.weight_kg":
+        return _weight_match_score(observed, str(expected))
+    if observed is None:
+        return 0.5
+    return 1.0 if _contains(observed, expected) else 0.0
+
+
+def _weight_match_score(observed: Any, expected: str) -> float:
+    if observed is None:
+        return 0.5
+    try:
+        weight = float(observed)
+    except (TypeError, ValueError):
+        return 0.5
+    if expected == "ultralight":
+        if weight <= 0.8:
+            return 1.0
+        if weight <= 1.0:
+            return 0.5
+        return 0.0
+    if expected == "lightweight":
+        if weight <= 1.0:
+            return 1.0
+        if weight <= 1.2:
+            return 0.5
+        return 0.0
+    return 0.0
 
 
 def _negative_preference_score(attributes: dict[str, Any], need: UserNeed) -> float:

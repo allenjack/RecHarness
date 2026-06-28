@@ -8,8 +8,16 @@ from recharness.catalog import (
     CatalogValidationReport,
     JsonlCatalog,
 )
-from recharness.core import RecHarness
-from recharness.evaluation import AgentOutput, EvalMission, EvalRecord, EvalResult, EvalRunner
+from recharness.core import HarnessVariant, RecHarness
+from recharness.evaluation import (
+    AgentOutput,
+    EvalMission,
+    EvalRecord,
+    EvalResult,
+    EvalRunner,
+    failure_labels_from_bundle,
+    failure_labels_from_report,
+)
 from recharness.preference import RuleBasedPreferenceParser
 from recharness.ranking import SimpleRanker
 from recharness.retrieval import (
@@ -53,6 +61,9 @@ __all__ = [
     "EvalRecord",
     "EvalResult",
     "EvalRunner",
+    "HarnessVariant",
+    "failure_labels_from_bundle",
+    "failure_labels_from_report",
     "HybridRetriever",
     "JsonlCatalog",
     "JsonlTraceLogger",

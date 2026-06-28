@@ -179,3 +179,32 @@ def test_cli_verify_no_fail_on_warning(capsys):
 
     assert warning_code == 0
     assert fail_code == 1
+
+
+def test_cli_eval_assist_writes_expected_outputs(tmp_path, capsys):
+    out_dir = tmp_path / "assist_eval"
+
+    exit_code = main(
+        [
+            "eval-assist",
+            "--catalog",
+            "examples/backpacks/catalog.jsonl",
+            "--missions",
+            "examples/backpacks/missions.jsonl",
+            "--out",
+            str(out_dir),
+            "--top-k",
+            "3",
+            "--variant",
+            "keyword_only",
+        ]
+    )
+
+    captured = capsys.readouterr()
+
+    assert exit_code == 0
+    assert "Evaluated 50 assist missions" in captured.out
+    assert (out_dir / "metrics.json").exists()
+    assert (out_dir / "per_mission_results.jsonl").exists()
+    assert (out_dir / "leaderboard.csv").exists()
+    assert (out_dir / "traces.jsonl").exists()

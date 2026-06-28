@@ -121,7 +121,10 @@ class VerificationReport(RecHarnessModel):
     checks: list[ConstraintCheck] = Field(default_factory=list)
     violations: list[Violation] = Field(default_factory=list)
     claim_issues: list[ClaimIssue] = Field(default_factory=list)
+    claim_issue_messages: list[str] = Field(default_factory=list)
     unsupported_claims: list[str] = Field(default_factory=list)
+    overstated_claims: list[str] = Field(default_factory=list)
+    incorrect_claims: list[str] = Field(default_factory=list)
     repair_suggestions: list[str] = Field(default_factory=list)
     summary: str | None = None
 

@@ -222,11 +222,22 @@ class RuleBasedPreferenceParser:
     def _extract_weight_preferences(self, query: str) -> list[Preference]:
         normalized = query.lower()
         preferences: list[Preference] = []
-        if (
+        if "ultralight" in normalized or "超轻" in query:
+            preferences.append(
+                Preference(
+                    field="attributes.weight_kg",
+                    value="ultralight",
+                    weight=0.85,
+                    polarity="positive",
+                    source="user",
+                )
+            )
+        elif (
             "lightweight" in normalized
-            or "ultralight" in normalized
+            or "light weight" in normalized
             or "轻量" in query
-            or "超轻" in query
+            or "轻便" in query
+            or "不重" in query
         ):
             preferences.append(
                 Preference(

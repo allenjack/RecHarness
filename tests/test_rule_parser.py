@@ -131,6 +131,26 @@ def test_parser_extracts_weight_constraints_and_preferences():
     )
 
 
+def test_parser_extracts_ultralight_as_distinct_weight_preference():
+    parser = RuleBasedPreferenceParser()
+
+    english = parser.parse("Find an ultralight backpack")
+    chinese = parser.parse("想要超轻双肩包")
+
+    assert any(
+        preference.field == "attributes.weight_kg"
+        and preference.value == "ultralight"
+        and preference.weight == 0.85
+        for preference in english.soft_preferences
+    )
+    assert any(
+        preference.field == "attributes.weight_kg"
+        and preference.value == "ultralight"
+        and preference.weight == 0.85
+        for preference in chinese.soft_preferences
+    )
+
+
 def test_parser_extracts_capacity_constraints_and_preferences():
     parser = RuleBasedPreferenceParser()
 

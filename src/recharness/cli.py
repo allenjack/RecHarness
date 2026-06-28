@@ -38,12 +38,20 @@ def main(argv: list[str] | None = None) -> int:
     assist_parser.add_argument("--top-k", type=int, default=5)
     assist_parser.add_argument("--json", action="store_true")
     assist_parser.add_argument("--trace-path")
+    assist_parser.add_argument("--variant", default="full")
 
     eval_parser = subparsers.add_parser("eval")
     eval_parser.add_argument("--catalog", required=True)
     eval_parser.add_argument("--missions", required=True)
     eval_parser.add_argument("--agent-outputs", required=True)
     eval_parser.add_argument("--out", required=True)
+
+    eval_assist_parser = subparsers.add_parser("eval-assist")
+    eval_assist_parser.add_argument("--catalog", required=True)
+    eval_assist_parser.add_argument("--missions", required=True)
+    eval_assist_parser.add_argument("--out", required=True)
+    eval_assist_parser.add_argument("--top-k", type=int, default=5)
+    eval_assist_parser.add_argument("--variant", default="full")
 
     mcp_parser = subparsers.add_parser("mcp")
     mcp_subparsers = mcp_parser.add_subparsers(dest="mcp_command", required=True)
@@ -71,9 +79,18 @@ def main(argv: list[str] | None = None) -> int:
             args.top_k,
             json_output=args.json,
             trace_path=args.trace_path,
+            variant=args.variant,
         )
     if args.command == "eval":
         return _eval(args.catalog, args.missions, args.agent_outputs, args.out)
+    if args.command == "eval-assist":
+        return _eval_assist(
+            args.catalog,
+            args.missions,
+            args.out,
+            top_k=args.top_k,
+            variant=args.variant,
+        )
     if args.command == "mcp" and args.mcp_command == "serve":
         return _mcp_serve(args.catalog)
 
@@ -159,10 +176,15 @@ def _assist(
     top_k: int,
     json_output: bool = False,
     trace_path: str | None = None,
+    variant: str = "full",
 ) -> int:
     try:
-        harness = RecHarness.from_jsonl_catalog(catalog_path, trace_path=trace_path)
-    except CatalogLoadError as exc:
+        harness = RecHarness.from_jsonl_catalog(
+            catalog_path,
+            variant=variant,
+            trace_path=trace_path,
+        )
+    except (CatalogLoadError, ValueError) as exc:
         print(f"Catalog invalid: {exc}", file=sys.stderr)
         return 1
 
@@ -228,7 +250,34 @@ def _eval(catalog_path: str, missions_path: str, outputs_path: str, out_dir: str
     result.write(out_dir)
 
     print(f"Evaluated {result.metrics['missions_total']} mission outputs")
-    print(f"Wrote metrics.json, leaderboard.csv, and traces.jsonl to {out_dir}")
+    print(
+        "Wrote metrics.json, per_mission_results.jsonl, leaderboard.csv, "
+        f"and traces.jsonl to {out_dir}"
+    )
+    return 0
+
+
+def _eval_assist(
+    catalog_path: str,
+    missions_path: str,
+    out_dir: str,
+    top_k: int = 5,
+    variant: str = "full",
+) -> int:
+    try:
+        harness = RecHarness.from_jsonl_catalog(catalog_path, variant=variant)
+    except (CatalogLoadError, ValueError) as exc:
+        print(f"Catalog invalid: {exc}", file=sys.stderr)
+        return 1
+
+    result = EvalRunner(harness=harness, missions_path=missions_path).run_assist(top_k=top_k)
+    result.write(out_dir)
+
+    print(f"Evaluated {result.metrics['missions_total']} assist missions")
+    print(
+        "Wrote metrics.json, per_mission_results.jsonl, leaderboard.csv, "
+        f"and traces.jsonl to {out_dir}"
+    )
     return 0
 
 

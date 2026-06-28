@@ -16,7 +16,7 @@ The current package version is `0.1.0`. The main branch includes:
 - transparent simple ranking
 - `RecHarness.assist()` with recommended and rejected candidate bundles
 - `verify_agent_recommendation()` SDK flow
-- CLI commands for catalog validation, assist, verify, eval, and optional MCP serving
+- CLI commands for catalog validation, assist, verify, eval, eval-assist, and optional MCP serving
 - JSONL trace logging
 - batch evaluation
 - a 50-product, 50-mission backpack benchmark fixture
@@ -173,7 +173,8 @@ recharness assist \
 recharness assist \
   --catalog examples/backpacks/catalog.jsonl \
   --query "Find a commuting backpack under 1500 RMB" \
-  --trace-path runs/assist.jsonl
+  --trace-path runs/assist.jsonl \
+  --variant full
 ```
 
 ## Evaluate Agent Outputs
@@ -186,9 +187,43 @@ recharness eval \
   --out runs/eval_baseline
 ```
 
-The eval command writes `metrics.json`, `leaderboard.csv`, and `traces.jsonl`.
+The eval command writes `metrics.json`, `per_mission_results.jsonl`,
+`leaderboard.csv`, and `traces.jsonl`.
 Trace records include structured verification reports, including `claim_issues`
-for factual claim diagnostics.
+for factual claim diagnostics. Claim metrics distinguish unsupported,
+overstated, and incorrect claims.
+
+## Run Harness Experiments
+
+Use `eval-assist` to evaluate RecHarness output directly against the benchmark
+missions:
+
+```bash
+recharness eval-assist \
+  --catalog examples/backpacks/catalog.jsonl \
+  --missions examples/backpacks/missions.jsonl \
+  --out runs/assist_eval \
+  --top-k 3
+```
+
+Harness variants make ablations explicit:
+
+```bash
+recharness eval-assist \
+  --catalog examples/backpacks/catalog.jsonl \
+  --missions examples/backpacks/missions.jsonl \
+  --out runs/assist_eval_keyword \
+  --top-k 3 \
+  --variant keyword_only
+```
+
+Available variants are `full`, `keyword_only`, and `constraint_only`.
+Assist evaluation reports `recommendation_count_avg`,
+`hard_constraint_satisfaction_rate`, `hard_violation_rate`,
+`gold_recall_at_k`, `avg_final_score`, and `avg_rejected_candidates`.
+Per-mission outputs include `failure_labels` such as
+`product_hallucination`, `hard_constraint_violation`, `overstated_claim`,
+`incorrect_claim`, and `candidate_pool_contains_violations`.
 
 The checked-in backpack benchmark contains:
 

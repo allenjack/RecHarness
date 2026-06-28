@@ -1,3 +1,5 @@
+import pytest
+
 from recharness import RecHarness
 
 
@@ -31,3 +33,24 @@ def test_recharness_assist_returns_recommendation_bundle_for_example_catalog():
     assert "waterproof" in bundle.summary_for_agent
     assert "UrbanLite" in bundle.summary_for_agent
     assert bundle.trace_id.startswith("assist_")
+
+
+def test_recharness_variants_run_and_unknown_variant_fails():
+    full = RecHarness.from_jsonl_catalog("examples/backpacks/catalog.jsonl", variant="full")
+    keyword = RecHarness.from_jsonl_catalog(
+        "examples/backpacks/catalog.jsonl",
+        variant="keyword_only",
+    )
+    constraint = RecHarness.from_jsonl_catalog(
+        "examples/backpacks/catalog.jsonl",
+        variant="constraint_only",
+    )
+
+    query = "Find a commuting backpack under 1500 RMB"
+
+    assert full.assist(query, top_k=1).recommended
+    assert keyword.assist(query, top_k=1).recommended
+    assert constraint.assist(query, top_k=1).recommended
+
+    with pytest.raises(ValueError, match="Unknown harness variant"):
+        RecHarness.from_jsonl_catalog("examples/backpacks/catalog.jsonl", variant="unknown")

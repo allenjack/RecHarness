@@ -27,7 +27,9 @@ def test_backpack_benchmark_eval_has_expected_signal():
     assert result.metrics["missions_total"] >= 50
     assert 0.65 <= result.metrics["product_groundedness_rate"] <= 0.9
     assert 0.55 <= result.metrics["hard_constraint_satisfaction_rate"] <= 0.85
-    assert 0.15 <= result.metrics["unsupported_claim_rate"] <= 0.45
+    assert result.metrics["unsupported_claim_rate"] == 0.0
+    assert 0.15 <= result.metrics["claim_issue_rate"] <= 0.45
+    assert 0.15 <= result.metrics["overstated_claim_rate"] <= 0.45
 
 
 def _line_count(path: str) -> int:

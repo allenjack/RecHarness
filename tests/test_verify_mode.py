@@ -36,8 +36,9 @@ def test_verify_agent_recommendation_reports_overstated_waterproof_claim():
     )
 
     assert report.status == "warning"
-    assert any("waterproof" in claim.lower() for claim in report.unsupported_claims)
-    assert any("splash_resistant" in claim for claim in report.unsupported_claims)
+    assert report.unsupported_claims == []
+    assert any("waterproof" in claim.lower() for claim in report.claim_issue_messages)
+    assert any("splash_resistant" in claim for claim in report.overstated_claims)
     assert report.claim_issues[0].claim_type == "water_resistance"
     assert report.claim_issues[0].observed_value == "splash_resistant"
 
@@ -72,6 +73,10 @@ def test_verify_agent_recommendation_fails_on_hard_claim_issue():
 
     assert report.status == "fail"
     assert any(issue.claim_type == "price" for issue in report.claim_issues)
+    assert report.unsupported_claims == []
+    assert report.overstated_claims == []
+    assert any("price claim" in claim for claim in report.incorrect_claims)
+    assert report.claim_issue_messages == report.incorrect_claims
 
 
 def test_verify_agent_recommendation_checks_claims_against_product_local_text():

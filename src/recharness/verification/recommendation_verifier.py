@@ -35,7 +35,10 @@ class RecommendationVerifier:
         checks = []
         violations = []
         claim_issues: list[ClaimIssue] = []
+        claim_issue_messages: list[str] = []
         unsupported_claims: list[str] = []
+        overstated_claims: list[str] = []
+        incorrect_claims: list[str] = []
         repair_suggestions: list[str] = []
 
         if not products:
@@ -61,7 +64,22 @@ class RecommendationVerifier:
                 local_text=local_text,
             )
             claim_issues.extend(product_claim_issues)
-            unsupported_claims.extend(issue.message for issue in product_claim_issues)
+            claim_issue_messages.extend(issue.message for issue in product_claim_issues)
+            unsupported_claims.extend(
+                issue.message
+                for issue in product_claim_issues
+                if issue.issue_type == "unsupported"
+            )
+            overstated_claims.extend(
+                issue.message
+                for issue in product_claim_issues
+                if issue.issue_type == "overstated"
+            )
+            incorrect_claims.extend(
+                issue.message
+                for issue in product_claim_issues
+                if issue.issue_type == "incorrect"
+            )
             if report.violations:
                 repair_suggestions.append(
                     f"Replace or qualify {product.title}; it violates parsed hard constraints."
@@ -89,7 +107,10 @@ class RecommendationVerifier:
             checks=checks,
             violations=violations,
             claim_issues=claim_issues,
+            claim_issue_messages=claim_issue_messages,
             unsupported_claims=unsupported_claims,
+            overstated_claims=overstated_claims,
+            incorrect_claims=incorrect_claims,
             repair_suggestions=repair_suggestions,
             summary=_summary(status, products, violations, claim_issues),
         )
