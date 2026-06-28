@@ -6,6 +6,8 @@ from enum import StrEnum
 
 
 class HarnessVariant(StrEnum):
+    """Diagnostic retrieval modes for comparing harness behavior."""
+
     FULL = "full"
     KEYWORD_ONLY = "keyword_only"
     CONSTRAINT_ONLY = "constraint_only"

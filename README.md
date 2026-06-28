@@ -19,7 +19,7 @@ The current package version is `0.1.0`. The main branch includes:
 - CLI commands for catalog validation, assist, verify, eval, eval-assist, and optional MCP serving
 - JSONL trace logging
 - batch evaluation
-- a 50-product, 50-mission backpack benchmark fixture
+- backpack and headphones example domains
 - pytest coverage for the foundation behavior
 
 No external LLM API is required for the current deterministic harness. Retrieval
@@ -193,20 +193,28 @@ Trace records include structured verification reports, including `claim_issues`
 for factual claim diagnostics. Claim metrics distinguish unsupported,
 overstated, and incorrect claims.
 
-## Run Harness Experiments
+## Run Local Evaluation
 
-Use `eval-assist` to evaluate RecHarness output directly against the benchmark
-missions:
+RecHarness includes local evaluation utilities for checking recommendation
+quality, constraint satisfaction, claim issues, and failure labels.
+
+Use `eval-assist` to evaluate RecHarness output directly against local mission
+files:
 
 ```bash
 recharness eval-assist \
   --catalog examples/backpacks/catalog.jsonl \
   --missions examples/backpacks/missions.jsonl \
   --out runs/assist_eval \
-  --top-k 3
+  --top-k 3 \
+  --variant full
 ```
 
-Harness variants make ablations explicit:
+Diagnostic variants help users compare retrieval behavior:
+
+- `full`: hybrid keyword + constraint-aware retrieval
+- `keyword_only`: keyword retrieval only
+- `constraint_only`: constraint-aware scoring only
 
 ```bash
 recharness eval-assist \
@@ -217,7 +225,15 @@ recharness eval-assist \
   --variant keyword_only
 ```
 
-Available variants are `full`, `keyword_only`, and `constraint_only`.
+```bash
+recharness eval-assist \
+  --catalog examples/backpacks/catalog.jsonl \
+  --missions examples/backpacks/missions.jsonl \
+  --out runs/assist_eval_constraint \
+  --top-k 3 \
+  --variant constraint_only
+```
+
 Assist evaluation reports `recommendation_count_avg`,
 `hard_constraint_satisfaction_rate`, `hard_violation_rate`,
 `gold_recall_at_k`, `avg_final_score`, and `avg_rejected_candidates`.
@@ -230,6 +246,25 @@ The checked-in backpack benchmark contains:
 - 50 catalog products
 - 50 recommendation missions
 - 50 baseline agent outputs covering valid, over-budget, hallucinated, and overstated-claim answers
+
+Example domains:
+
+- `examples/backpacks`
+- `examples/headphones`
+
+SDK demos:
+
+- `examples/assist_demo.py`
+- `examples/verify_demo.py`
+- `examples/evaluation_demo.py`
+
+Additional docs:
+
+- `docs/catalog_schema.md`
+- `docs/recommendation_bundle.md`
+- `docs/verification.md`
+- `docs/evaluation.md`
+- `docs/adding_a_new_domain.md`
 
 ## Current Limitations
 

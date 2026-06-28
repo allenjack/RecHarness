@@ -26,6 +26,7 @@ class ClaimVerifier:
         issues.extend(_laptop_fit_issues(product, answer))
         issues.extend(_weight_issues(product, answer))
         issues.extend(_availability_issues(product, answer))
+        issues.extend(_noise_cancellation_issues(product, answer))
 
         return issues
 
@@ -152,6 +153,29 @@ def _availability_issues(product: ProductItem, answer: str) -> list[ClaimIssue]:
     ]
 
 
+def _noise_cancellation_issues(product: ProductItem, answer: str) -> list[ClaimIssue]:
+    if not _claims_active_noise_cancellation(answer):
+        return []
+    observed = str(product.attributes.get("noise_cancellation", "unknown"))
+    if observed.lower() == "anc":
+        return []
+    return [
+        _claim_issue(
+            product,
+            claim_type="noise_cancellation",
+            issue_type="overstated",
+            severity="warning",
+            field="attributes.noise_cancellation",
+            claimed_value="anc",
+            observed_value=observed,
+            message=(
+                f"{product.title}: active noise cancellation claim is overstated; "
+                f"catalog noise_cancellation={observed}"
+            ),
+        )
+    ]
+
+
 def _claims_waterproof(answer: str) -> bool:
     return (
         "waterproof" in answer
@@ -182,6 +206,16 @@ def _claims_available(answer: str) -> bool:
         or "现货" in answer
         or "可购买" in answer
         or "库存充足" in answer
+    )
+
+
+def _claims_active_noise_cancellation(answer: str) -> bool:
+    return (
+        "active noise cancellation" in answer
+        or "active noise cancelling" in answer
+        or " anc" in f" {answer}"
+        or "有降噪" in answer
+        or "主动降噪" in answer
     )
 
 

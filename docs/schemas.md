@@ -19,8 +19,9 @@ Core schemas:
 Catalog rows validate as `ProductItem` objects. Product-specific details should go in `attributes` so the core schema remains category-agnostic.
 
 `VerificationReport.claim_issues` is the primary structured claim-verification
-surface. `VerificationReport.unsupported_claims` remains available as a
-backward-compatible list of claim issue messages.
+surface. `claim_issue_messages` contains all claim messages, while
+`unsupported_claims`, `overstated_claims`, and `incorrect_claims` provide
+typed message buckets.
 
 Verification reports also expose `mentioned_products`, `resolved_products`,
 `unresolved_mentions`, and `product_grounded` so evaluation code does not need

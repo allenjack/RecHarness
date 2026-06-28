@@ -1,0 +1,12 @@
+{"mission_id":"headphones_001","user_query":"Find wireless headphones under 1000 RMB for office calls.","gold_product_ids":["hp_001","hp_010","hp_013"]}
+{"mission_id":"headphones_002","user_query":"Need low-latency gaming headphones under 1000 RMB.","gold_product_ids":["hp_002","hp_012"]}
+{"mission_id":"headphones_003","user_query":"想找1000元以内，适合通勤，有降噪的蓝牙耳机。","gold_product_ids":["hp_009","hp_013"]}
+{"mission_id":"headphones_004","user_query":"需要跑步用、防汗、轻量的耳机。","gold_product_ids":["hp_003","hp_014"]}
+{"mission_id":"headphones_005","user_query":"Find travel headphones with noise cancellation.","gold_product_ids":["hp_004","hp_011"]}
+{"mission_id":"headphones_006","user_query":"Find wired budget headphones under 300 RMB.","gold_product_ids":["hp_005","hp_012"]}
+{"mission_id":"headphones_007","user_query":"Find in-stock wireless earbuds under 800 RMB for commuting.","gold_product_ids":["hp_006","hp_014"]}
+{"mission_id":"headphones_008","user_query":"Need office headphones under 500 RMB for calls.","gold_product_ids":["hp_010"]}
+{"mission_id":"headphones_009","user_query":"Find ANC headphones under 1000 RMB.","gold_product_ids":["hp_001","hp_009","hp_013"]}
+{"mission_id":"headphones_010","user_query":"Find lightweight wireless running earbuds.","gold_product_ids":["hp_003","hp_014"]}
+{"mission_id":"headphones_011","user_query":"Find premium travel headphones with long battery life.","gold_product_ids":["hp_004","hp_011"]}
+{"mission_id":"headphones_012","user_query":"Find studio wired headphones for home music.","gold_product_ids":["hp_008"]}
