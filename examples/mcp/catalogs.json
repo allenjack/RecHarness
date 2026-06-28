@@ -1,0 +1,15 @@
+{
+  "default_catalog": "backpacks",
+  "catalogs": {
+    "backpacks": {
+      "path": "examples/backpacks/catalog.jsonl",
+      "category": "backpack",
+      "description": "Backpacks for commute, travel, office, and outdoor use"
+    },
+    "headphones": {
+      "path": "examples/headphones/catalog.jsonl",
+      "category": "headphones",
+      "description": "Headphones and earbuds for office, travel, gaming, commuting, and running"
+    }
+  }
+}

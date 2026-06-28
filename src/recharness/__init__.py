@@ -2,13 +2,17 @@
 
 from recharness.bundle import BundleBuilder
 from recharness.catalog import (
+    CatalogConfig,
+    CatalogConfigError,
     CatalogIssue,
     CatalogLoadError,
     CatalogStats,
     CatalogValidationReport,
     JsonlCatalog,
+    MultiCatalogConfig,
+    load_multi_catalog_config,
 )
-from recharness.core import HarnessVariant, RecHarness
+from recharness.core import AgentHarnessRouter, HarnessVariant, RecHarness
 from recharness.evaluation import (
     AgentOutput,
     EvalMission,
@@ -41,14 +45,29 @@ from recharness.schema import (
     VerificationReport,
     Violation,
 )
+from recharness.schema.tools import (
+    AssistRequest,
+    AssistResponse,
+    ParseRequest,
+    ParseResponse,
+    VerifyRequest,
+    VerifyResponse,
+)
 from recharness.tracing import JsonlTraceLogger
 from recharness.verification import ClaimVerifier, ConstraintVerifier, RecommendationVerifier
 
 __all__ = [
     "CatalogIssue",
+    "CatalogConfig",
+    "CatalogConfigError",
     "CatalogLoadError",
     "CatalogStats",
     "CatalogValidationReport",
+    "MultiCatalogConfig",
+    "load_multi_catalog_config",
+    "AgentHarnessRouter",
+    "AssistRequest",
+    "AssistResponse",
     "ClaimVerifier",
     "ClaimIssue",
     "AgentOutput",
@@ -69,6 +88,8 @@ __all__ = [
     "JsonlTraceLogger",
     "KeywordRetriever",
     "Money",
+    "ParseRequest",
+    "ParseResponse",
     "Preference",
     "ProductItem",
     "RecHarness",
@@ -80,6 +101,8 @@ __all__ = [
     "TraceEvent",
     "UserNeed",
     "VerificationReport",
+    "VerifyRequest",
+    "VerifyResponse",
     "Violation",
     "ConstraintVerifier",
     "RecommendationVerifier",

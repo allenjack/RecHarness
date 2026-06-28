@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import re
 
+from recharness.domains import get_domain_adapter
 from recharness.schema import Constraint, Preference, UserNeed
 
 
@@ -73,6 +74,13 @@ class RuleBasedPreferenceParser:
             if capacity_preference is not None:
                 need.soft_preferences.append(capacity_preference)
         need.negative_preferences.extend(self._extract_negative_preferences(normalized))
+
+        adapter = get_domain_adapter(need.category)
+        if adapter is not None:
+            try:
+                need = adapter.enrich_user_need(need, query)
+            except Exception:
+                pass
 
         return need
 

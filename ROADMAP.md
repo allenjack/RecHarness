@@ -6,6 +6,7 @@
 - Add configurable scoring weights
 - Add more example product domains
 - Improve MCP integration docs
+- Stabilize optional HTTP API design
 - Add optional vector retrieval adapter
 - Add optional LLM parser adapter
 

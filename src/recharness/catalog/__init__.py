@@ -10,7 +10,31 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
+from recharness.catalog.config import (
+    CatalogConfig as CatalogConfig,
+)
+from recharness.catalog.config import (
+    CatalogConfigError as CatalogConfigError,
+)
+from recharness.catalog.config import (
+    MultiCatalogConfig as MultiCatalogConfig,
+)
+from recharness.catalog.config import (
+    load_multi_catalog_config as load_multi_catalog_config,
+)
 from recharness.schema import ProductItem
+
+__all__ = [
+    "CatalogConfig",
+    "CatalogConfigError",
+    "CatalogIssue",
+    "CatalogLoadError",
+    "CatalogStats",
+    "CatalogValidationReport",
+    "JsonlCatalog",
+    "MultiCatalogConfig",
+    "load_multi_catalog_config",
+]
 
 
 class CatalogLoadError(ValueError):

@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+- Added stable agent-facing parse, assist, and verify request/response schemas
+- Added multi-catalog configuration loading
+- Added `AgentHarnessRouter` for deterministic domain routing
+- Upgraded MCP adapter to support multi-catalog config mode
+- Added deterministic domain adapter interface
+- Added headphones query enrichment and claim checks
+- Added agent-loop SDK examples and integration docs
+
 ## 0.1.0 - Initial alpha
 
 - Local JSONL product catalog loading and validation

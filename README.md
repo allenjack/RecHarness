@@ -16,6 +16,7 @@ The current package version is `0.1.0`. The main branch includes:
 - transparent simple ranking
 - `RecHarness.assist()` with recommended and rejected candidate bundles
 - `verify_agent_recommendation()` SDK flow
+- `AgentHarnessRouter` for stable agent-facing parse, assist, and verify envelopes
 - CLI commands for catalog validation, assist, verify, eval, eval-assist, and optional MCP serving
 - JSONL trace logging
 - batch evaluation
@@ -177,6 +178,36 @@ recharness assist \
   --variant full
 ```
 
+## Agent Integration
+
+Use `AgentHarnessRouter` when a general-purpose agent needs stable request and
+response envelopes across multiple local catalogs:
+
+```python
+from recharness import AgentHarnessRouter, AssistRequest, VerifyRequest
+
+router = AgentHarnessRouter.from_config_file("examples/mcp/catalogs.json")
+
+assist = router.assist(
+    AssistRequest(
+        user_query="想找1000元以内，适合通勤，有降噪的蓝牙耳机",
+        domain="headphones",
+        top_k=3,
+    )
+)
+
+verify = router.verify(
+    VerifyRequest(
+        user_query="想找1000元以内，适合通勤，有降噪的蓝牙耳机",
+        domain="headphones",
+        agent_answer="我推荐 SonicLite AirBuds，售价699元，有主动降噪。",
+    )
+)
+```
+
+See `docs/agent_integration.md`, `docs/mcp_config.md`, and
+`docs/domain_adapters.md` for integration details.
+
 ## Evaluate Agent Outputs
 
 ```bash
@@ -257,6 +288,8 @@ SDK demos:
 - `examples/assist_demo.py`
 - `examples/verify_demo.py`
 - `examples/evaluation_demo.py`
+- `examples/agent_loops/verify_before_final_answer.py`
+- `examples/agent_loops/repair_loop_demo.py`
 
 Additional docs:
 
@@ -265,6 +298,10 @@ Additional docs:
 - `docs/verification.md`
 - `docs/evaluation.md`
 - `docs/adding_a_new_domain.md`
+- `docs/agent_integration.md`
+- `docs/mcp_config.md`
+- `docs/domain_adapters.md`
+- `docs/http_server.md`
 
 ## Current Limitations
 

@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from recharness.domains import get_domain_adapter
 from recharness.schema import ClaimIssue, ProductItem
 
 
@@ -27,8 +28,9 @@ class ClaimVerifier:
         issues.extend(_weight_issues(product, answer))
         issues.extend(_availability_issues(product, answer))
         issues.extend(_noise_cancellation_issues(product, answer))
+        issues.extend(_domain_claim_issues(product, text))
 
-        return issues
+        return _dedupe_issues(issues)
 
 
 def _water_resistance_issues(product: ProductItem, answer: str) -> list[ClaimIssue]:
@@ -217,6 +219,46 @@ def _claims_active_noise_cancellation(answer: str) -> bool:
         or "有降噪" in answer
         or "主动降噪" in answer
     )
+
+
+def _domain_claim_issues(product: ProductItem, text: str) -> list[ClaimIssue]:
+    adapter = get_domain_adapter(product.category)
+    if adapter is None:
+        return []
+    try:
+        return adapter.verify_claims(product, text)
+    except Exception as exc:
+        return [
+            _claim_issue(
+                product,
+                claim_type="domain_adapter",
+                issue_type="unsupported",
+                severity="warning",
+                field="category",
+                claimed_value=product.category,
+                observed_value=product.category,
+                message=f"{product.title}: domain adapter claim check failed: {exc}",
+            )
+        ]
+
+
+def _dedupe_issues(issues: list[ClaimIssue]) -> list[ClaimIssue]:
+    deduped: list[ClaimIssue] = []
+    seen: set[tuple[Any, ...]] = set()
+    for issue in issues:
+        key = (
+            issue.product_id,
+            issue.claim_type,
+            issue.issue_type,
+            issue.field,
+            str(issue.claimed_value),
+            str(issue.observed_value),
+        )
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(issue)
+    return deduped
 
 
 def _claim_issue(product: ProductItem, **kwargs: Any) -> ClaimIssue:

@@ -56,7 +56,9 @@ def main(argv: list[str] | None = None) -> int:
     mcp_parser = subparsers.add_parser("mcp")
     mcp_subparsers = mcp_parser.add_subparsers(dest="mcp_command", required=True)
     mcp_serve_parser = mcp_subparsers.add_parser("serve")
-    mcp_serve_parser.add_argument("--catalog", required=True)
+    mcp_source = mcp_serve_parser.add_mutually_exclusive_group(required=True)
+    mcp_source.add_argument("--catalog")
+    mcp_source.add_argument("--config")
 
     args = parser.parse_args(argv)
 
@@ -92,7 +94,7 @@ def main(argv: list[str] | None = None) -> int:
             variant=args.variant,
         )
     if args.command == "mcp" and args.mcp_command == "serve":
-        return _mcp_serve(args.catalog)
+        return _mcp_serve(catalog_path=args.catalog, config_path=args.config)
 
     parser.error("Unsupported command")
     return 2
@@ -281,9 +283,9 @@ def _eval_assist(
     return 0
 
 
-def _mcp_serve(catalog_path: str) -> int:
+def _mcp_serve(catalog_path: str | None = None, config_path: str | None = None) -> int:
     try:
-        server = create_mcp_server(catalog_path)
+        server = create_mcp_server(catalog_path=catalog_path, config_path=config_path)
     except RuntimeError as exc:
         print(str(exc), file=sys.stderr)
         return 1

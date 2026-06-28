@@ -84,6 +84,10 @@ def _positive_preference_score(attributes: dict[str, Any], need: UserNeed) -> fl
 def _positive_match_score(observed: Any, field: str, expected: Any) -> float:
     if field == "attributes.weight_kg":
         return _weight_match_score(observed, str(expected))
+    if field == "attributes.latency_ms":
+        return _latency_match_score(observed, str(expected))
+    if field == "attributes.battery_life_hours":
+        return _battery_match_score(observed, str(expected))
     if observed is None:
         return 0.5
     return 1.0 if _contains(observed, expected) else 0.0
@@ -106,6 +110,38 @@ def _weight_match_score(observed: Any, expected: str) -> float:
         if weight <= 1.0:
             return 1.0
         if weight <= 1.2:
+            return 0.5
+        return 0.0
+    return 0.0
+
+
+def _latency_match_score(observed: Any, expected: str) -> float:
+    if observed is None:
+        return 0.5
+    try:
+        latency = float(observed)
+    except (TypeError, ValueError):
+        return 0.5
+    if expected == "low_latency":
+        if latency <= 50:
+            return 1.0
+        if latency <= 80:
+            return 0.5
+        return 0.0
+    return 0.0
+
+
+def _battery_match_score(observed: Any, expected: str) -> float:
+    if observed is None:
+        return 0.5
+    try:
+        hours = float(observed)
+    except (TypeError, ValueError):
+        return 0.5
+    if expected == "long_battery":
+        if hours >= 30:
+            return 1.0
+        if hours >= 20:
             return 0.5
         return 0.0
     return 0.0
