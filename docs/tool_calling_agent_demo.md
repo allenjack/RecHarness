@@ -23,6 +23,25 @@ returns warning or fail.
 python examples/integrations/tool_calling_agent_demo.py
 ```
 
+## Local Dogfooding
+
+Headphones dogfooding tasks can be run locally as a development utility for
+checking routing, grounded recommendations, and verification diagnostics:
+
+```bash
+python examples/integrations/run_headphones_dogfood.py
+```
+
+Optional JSONL output:
+
+```bash
+python examples/integrations/run_headphones_dogfood.py \
+  --out runs/headphones_dogfood/results.jsonl
+```
+
+This is not a benchmark report generator; it prints task-level diagnostics and
+can write raw JSONL results for manual review.
+
 ## Tool Adapter
 
 `make_recharness_tool_functions(router)` returns plain Python callables:

@@ -68,21 +68,48 @@ def repair_or_qualify_answer(answer: str, verify_response: dict[str, Any]) -> st
     return f"{repaired}\n{' '.join(caveats)}"
 
 
-def run_demo(user_query: str | None = None) -> str:
-    query = user_query or DEFAULT_QUERY
+def run_agent_loop(user_query: str) -> dict[str, Any]:
     router = AgentHarnessRouter.from_config_file(CATALOG_CONFIG_PATH)
     tools = make_recharness_tool_functions(router)
 
     catalogs = tools["recharness_list_catalogs"]()
-    domain = choose_domain(catalogs, query)
-    assist = tools["recharness_assist"](user_query=query, domain=domain, top_k=3)
+    domain = choose_domain(catalogs, user_query)
+    assist = tools["recharness_assist"](user_query=user_query, domain=domain, top_k=3)
     draft = draft_answer_from_assist_response(assist)
     verify = tools["recharness_verify_recommendation"](
-        user_query=query,
+        user_query=user_query,
         domain=domain,
         agent_answer=draft,
     )
-    return repair_or_qualify_answer(draft, verify)
+    final_answer = repair_or_qualify_answer(draft, verify)
+    bundle = assist.get("bundle") or {}
+    report = verify.get("report") or {}
+    return {
+        "user_query": user_query,
+        "selected_domain": domain,
+        "assist_status": assist.get("status"),
+        "verify_status": verify.get("status"),
+        "recommended_product_ids": _recommended_product_ids(bundle),
+        "final_answer": final_answer,
+        "warnings": list(assist.get("warnings", [])) + list(verify.get("warnings", [])),
+        "claim_issues": report.get("claim_issues", []),
+        "violations": report.get("violations", []),
+    }
+
+
+def run_demo(user_query: str | None = None) -> str:
+    return str(run_agent_loop(user_query or DEFAULT_QUERY)["final_answer"])
+
+
+def _recommended_product_ids(bundle: dict[str, Any]) -> list[str]:
+    recommended = bundle.get("recommended", [])
+    product_ids: list[str] = []
+    for candidate in recommended:
+        product = candidate.get("product", {})
+        product_id = product.get("product_id")
+        if product_id:
+            product_ids.append(str(product_id))
+    return product_ids
 
 
 def _price_text(price: dict[str, Any] | None) -> str:

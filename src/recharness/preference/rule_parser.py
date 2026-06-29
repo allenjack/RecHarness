@@ -60,6 +60,10 @@ class RuleBasedPreferenceParser:
         if laptop_constraint is not None:
             need.hard_constraints.append(laptop_constraint)
 
+        availability_constraint = self._extract_availability_constraint(query)
+        if availability_constraint is not None:
+            need.hard_constraints.append(availability_constraint)
+
         need.hard_constraints.extend(self._extract_water_resistance_constraints(query))
         need.soft_preferences.extend(self._extract_water_resistance_preferences(query))
         weight_constraint = self._extract_weight_constraint(query)
@@ -158,6 +162,24 @@ class RuleBasedPreferenceParser:
                     source="user",
                 )
         return None
+
+    def _extract_availability_constraint(self, query: str) -> Constraint | None:
+        normalized = query.lower()
+        if not (
+            "in stock" in normalized
+            or "available" in normalized
+            or "有货" in query
+            or "现货" in query
+            or "可购买" in query
+        ):
+            return None
+        return Constraint(
+            field="availability",
+            operator="=",
+            value="in_stock",
+            severity="hard",
+            source="user",
+        )
 
     def _extract_water_resistance_constraints(self, query: str) -> list[Constraint]:
         normalized = query.lower()

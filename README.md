@@ -234,7 +234,20 @@ Useful links:
 - `docs/openai_agents.md`
 - `examples/integrations/mcp_client_demo.py`
 - `examples/integrations/tool_calling_agent_demo.py`
+- `examples/integrations/run_headphones_dogfood.py`
 - `examples/integrations/openai_agents_demo.py`
+
+Headphones dogfooding tasks can be run locally as a development utility:
+
+```bash
+python examples/integrations/run_headphones_dogfood.py
+
+python examples/integrations/run_headphones_dogfood.py \
+  --out runs/headphones_dogfood/results.jsonl
+```
+
+The dogfood runner prints task-level diagnostics and optional raw JSONL output;
+it is not a benchmark report generator.
 
 ## Evaluate Agent Outputs
 

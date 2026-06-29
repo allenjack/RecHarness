@@ -131,6 +131,21 @@ def test_parser_extracts_weight_constraints_and_preferences():
     )
 
 
+def test_parser_extracts_availability_constraint():
+    parser = RuleBasedPreferenceParser()
+
+    english = parser.parse("Need lightweight workout earbuds that are in stock")
+    chinese = parser.parse("想要现货有货的蓝牙耳机")
+
+    for need in [english, chinese]:
+        assert any(
+            constraint.field == "availability"
+            and constraint.operator == "="
+            and constraint.value == "in_stock"
+            for constraint in need.hard_constraints
+        )
+
+
 def test_parser_extracts_ultralight_as_distinct_weight_preference():
     parser = RuleBasedPreferenceParser()
 
