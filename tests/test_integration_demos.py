@@ -10,6 +10,7 @@ def test_mcp_client_demo_runs_without_mcp_or_llm():
 
     assert "推荐" in answer or "我建议" in answer
     assert "SonicLite AirBuds，有主动降噪" not in answer
+    assert "部分推荐可能不满足硬性约束" not in answer
 
 
 def test_mcp_client_demo_selects_domain_deterministically():

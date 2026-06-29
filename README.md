@@ -219,18 +219,21 @@ See `docs/agent_integration.md`, `docs/mcp_config.md`, and
 
 RecHarness can be used through:
 
-- Python SDK
-- MCP tools
-- deterministic agent-loop examples
-- optional OpenAI Agents SDK example
+1. Python SDK
+2. MCP tools
+3. deterministic MCP-style demo
+4. deterministic tool-calling agent demo
+5. optional OpenAI Agents SDK demo
 
 Useful links:
 
 - `docs/agent_integration.md`
 - `docs/mcp_config.md`
 - `docs/mcp_client_demo.md`
+- `docs/tool_calling_agent_demo.md`
 - `docs/openai_agents.md`
 - `examples/integrations/mcp_client_demo.py`
+- `examples/integrations/tool_calling_agent_demo.py`
 - `examples/integrations/openai_agents_demo.py`
 
 ## Evaluate Agent Outputs
@@ -326,6 +329,7 @@ Additional docs:
 - `docs/agent_integration.md`
 - `docs/mcp_config.md`
 - `docs/mcp_client_demo.md`
+- `docs/tool_calling_agent_demo.md`
 - `docs/domain_adapters.md`
 - `docs/http_server.md`
 - `docs/openai_agents.md`

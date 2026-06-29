@@ -1,0 +1,10 @@
+{"task_id":"dogfood_hp_001","user_query":"想找1000元以内，适合通勤，有降噪的蓝牙耳机","expected_domain":"headphones"}
+{"task_id":"dogfood_hp_002","user_query":"Need low-latency gaming headphones under 1000 RMB","expected_domain":"headphones"}
+{"task_id":"dogfood_hp_003","user_query":"需要跑步用、防汗、轻量的耳机","expected_domain":"headphones"}
+{"task_id":"dogfood_hp_004","user_query":"Find wired budget headphones under 300 RMB","expected_domain":"headphones"}
+{"task_id":"dogfood_hp_005","user_query":"Need office headphones for calls with microphone noise reduction","expected_domain":"headphones"}
+{"task_id":"dogfood_hp_006","user_query":"想要旅行用、续航长、有主动降噪的头戴耳机","expected_domain":"headphones"}
+{"task_id":"dogfood_hp_007","user_query":"Recommend splash-resistant earbuds for commuting under 900 RMB","expected_domain":"headphones"}
+{"task_id":"dogfood_hp_008","user_query":"找一款学习用的有线耳机，预算300元以内","expected_domain":"headphones"}
+{"task_id":"dogfood_hp_009","user_query":"Need lightweight workout earbuds that are in stock","expected_domain":"headphones"}
+{"task_id":"dogfood_hp_010","user_query":"Find premium ANC headphones for office focus under 1500 RMB","expected_domain":"headphones"}

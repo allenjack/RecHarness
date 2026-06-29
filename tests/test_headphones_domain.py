@@ -42,6 +42,17 @@ def test_headphones_connection_mismatch_is_hard_claim_issue():
     assert any(issue.claim_type == "connection" for issue in report.claim_issues)
 
 
+def test_headphones_product_name_substrings_do_not_create_connection_claims():
+    harness = RecHarness.from_jsonl_catalog("examples/headphones/catalog.jsonl")
+    report = harness.verify_agent_recommendation(
+        "Find headphones under 1000 RMB",
+        "I recommend FocusBean ANC Clip. It costs 999 RMB.",
+    )
+
+    assert report.status == "pass"
+    assert not any(issue.claim_type == "connection" for issue in report.claim_issues)
+
+
 def test_headphones_assist_prefers_relevant_anc_commute_products():
     harness = RecHarness.from_jsonl_catalog("examples/headphones/catalog.jsonl")
     bundle = harness.assist("想找1000元以内，适合通勤，有降噪的蓝牙耳机", top_k=3)

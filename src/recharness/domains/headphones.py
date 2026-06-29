@@ -200,17 +200,39 @@ def _battery_issues(product: ProductItem, text: str) -> list[ClaimIssue]:
 
 def _connection_issues(product: ProductItem, lowered: str, text: str) -> list[ClaimIssue]:
     observed = str(product.attributes.get("connection", "unknown"))
-    claims_wireless = any(
-        term in lowered or term in text
-        for term in ["wireless", "bluetooth", "蓝牙", "无线"]
+    claims_wireless = _contains_connection_term(
+        lowered,
+        text,
+        english_terms=["wireless", "bluetooth"],
+        exact_terms=["蓝牙", "无线"],
     )
-    claims_wired = any(term in lowered or term in text for term in ["wired", "usb", "有线"])
+    claims_wired = _contains_connection_term(
+        lowered,
+        text,
+        english_terms=["wired", "usb"],
+        exact_terms=["有线"],
+    )
     issues: list[ClaimIssue] = []
     if claims_wireless and "wireless" not in observed.lower():
         issues.append(_connection_issue(product, "wireless", observed))
     if claims_wired and "wired" not in observed.lower() and "usb" not in observed.lower():
         issues.append(_connection_issue(product, "wired", observed))
     return issues
+
+
+def _contains_connection_term(
+    lowered: str,
+    text: str,
+    english_terms: list[str],
+    exact_terms: list[str],
+) -> bool:
+    return any(_contains_ascii_token(lowered, term) for term in english_terms) or any(
+        term in text for term in exact_terms
+    )
+
+
+def _contains_ascii_token(lowered: str, term: str) -> bool:
+    return re.search(rf"(?<![a-z0-9]){re.escape(term)}(?![a-z0-9])", lowered) is not None
 
 
 def _connection_issue(product: ProductItem, claimed: str, observed: str) -> ClaimIssue:
