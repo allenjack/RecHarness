@@ -15,6 +15,8 @@ def test_tool_calling_agent_demo_selects_domain_deterministically():
     }
 
     assert choose_domain(catalogs, "想找有降噪的蓝牙耳机") == "headphones"
+    assert choose_domain(catalogs, "想找真无线TWS耳塞") == "headphones"
+    assert choose_domain(catalogs, "Need USB-C earbuds") == "headphones"
     assert choose_domain(catalogs, "Need low-latency gaming headphones") == "headphones"
     assert choose_domain(catalogs, "Find a commuting backpack") == "backpacks"
     assert choose_domain(catalogs, "Find something affordable") == "backpacks"
@@ -40,3 +42,8 @@ def test_tool_calling_agent_loop_returns_structured_result():
     assert isinstance(result["warnings"], list)
     assert isinstance(result["claim_issues"], list)
     assert isinstance(result["violations"], list)
+    assert result["recommended_titles"]
+    assert result["warnings_count"] == len(result["warnings"])
+    assert result["claim_issue_count"] == len(result["claim_issues"])
+    assert result["violation_count"] == len(result["violations"])
+    assert "本地目录标注" in result["final_answer"]

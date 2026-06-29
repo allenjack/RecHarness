@@ -39,6 +39,7 @@ def run_task(task: dict[str, Any]) -> dict[str, Any]:
 def summarize_result(result: dict[str, Any]) -> str:
     issues = _issue_summary(result)
     recommended = ", ".join(result.get("recommended_product_ids", [])) or "(none)"
+    titles = ", ".join(result.get("recommended_titles", [])) or "(none)"
     return "\n".join(
         [
             f"Task: {result['task_id']}",
@@ -48,7 +49,14 @@ def summarize_result(result: dict[str, Any]) -> str:
             f"Assist status: {result['assist_status']}",
             f"Verify status: {result['verify_status']}",
             f"Recommended: {recommended}",
+            f"Recommended titles: {titles}",
             f"Issues: {issues}",
+            (
+                "Issue counts: "
+                f"warnings={result.get('warnings_count', 0)}, "
+                f"claim_issues={result.get('claim_issue_count', 0)}, "
+                f"violations={result.get('violation_count', 0)}"
+            ),
             "Final answer:",
             str(result["final_answer"]),
         ]

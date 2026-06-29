@@ -14,7 +14,19 @@ CATALOG_CONFIG_PATH = "examples/mcp/catalogs.json"
 def choose_domain(catalogs: dict[str, Any], user_query: str) -> str:
     query = user_query.lower()
     available = {item["domain"] for item in catalogs.get("catalogs", [])}
-    headphone_terms = ["headphones", "earphones", "earbuds", "耳机", "蓝牙", "降噪"]
+    headphone_terms = [
+        "headphones",
+        "earphones",
+        "earbuds",
+        "tws",
+        "usb-c",
+        "耳机",
+        "耳塞",
+        "入耳式",
+        "真无线",
+        "蓝牙",
+        "降噪",
+    ]
     backpack_terms = ["backpack", "bag", "背包", "双肩包"]
 
     if any(term in query or term in user_query for term in headphone_terms):
@@ -44,7 +56,7 @@ def draft_answer_from_assist_response(assist_response: dict[str, Any]) -> str:
         title = product.get("title", "未命名商品")
         price = _price_text(product.get("price"))
         facts = _safe_facts(product.get("category", ""), product.get("attributes", {}))
-        fact_text = f"，{'; '.join(facts)}" if facts else ""
+        fact_text = f"，本地目录标注：{'; '.join(facts)}" if facts else ""
         lines.append(f"- {title}{price}{fact_text}")
     return "\n".join(lines)
 
@@ -90,10 +102,14 @@ def run_agent_loop(user_query: str) -> dict[str, Any]:
         "assist_status": assist.get("status"),
         "verify_status": verify.get("status"),
         "recommended_product_ids": _recommended_product_ids(bundle),
+        "recommended_titles": _recommended_titles(bundle),
         "final_answer": final_answer,
         "warnings": list(assist.get("warnings", [])) + list(verify.get("warnings", [])),
         "claim_issues": report.get("claim_issues", []),
         "violations": report.get("violations", []),
+        "warnings_count": len(assist.get("warnings", [])) + len(verify.get("warnings", [])),
+        "claim_issue_count": len(report.get("claim_issues", [])),
+        "violation_count": len(report.get("violations", [])),
     }
 
 
@@ -110,6 +126,17 @@ def _recommended_product_ids(bundle: dict[str, Any]) -> list[str]:
         if product_id:
             product_ids.append(str(product_id))
     return product_ids
+
+
+def _recommended_titles(bundle: dict[str, Any]) -> list[str]:
+    recommended = bundle.get("recommended", [])
+    titles: list[str] = []
+    for candidate in recommended:
+        product = candidate.get("product", {})
+        title = product.get("title")
+        if title:
+            titles.append(str(title))
+    return titles
 
 
 def _price_text(price: dict[str, Any] | None) -> str:

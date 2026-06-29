@@ -42,6 +42,12 @@ class RuleBasedPreferenceParser:
         re.compile(r"(?:大约|约)\s*(\d+(?:\.\d+)?)\s*(?:l|升)", re.I),
         re.compile(r"(\d+(?:\.\d+)?)\s*(?:l|升)", re.I),
     ]
+    _availability_patterns = [
+        re.compile(r"\bin stock\b", re.I),
+        re.compile(r"\bcurrently available\b", re.I),
+        re.compile(r"\bavailable to buy\b", re.I),
+        re.compile(r"\bavailable for purchase\b", re.I),
+    ]
 
     def parse(self, query: str) -> UserNeed:
         normalized = query.lower()
@@ -90,7 +96,21 @@ class RuleBasedPreferenceParser:
 
     def _extract_category(self, normalized_query: str) -> str | None:
         category_terms = [
-            ("headphones", ["headphones", "earphones", "earbuds", "耳机", "蓝牙耳机"]),
+            (
+                "headphones",
+                [
+                    "headphones",
+                    "earphones",
+                    "earbuds",
+                    "tws",
+                    "耳机",
+                    "蓝牙耳机",
+                    "头戴耳机",
+                    "耳塞",
+                    "入耳式",
+                    "真无线",
+                ],
+            ),
             ("shoes", ["running shoes", "sneakers", "shoes", "运动鞋", "跑鞋", "鞋"]),
             ("keyboard", ["mechanical keyboard", "keyboard", "机械键盘", "键盘"]),
             ("mouse", ["mouse", "鼠标"]),
@@ -164,13 +184,12 @@ class RuleBasedPreferenceParser:
         return None
 
     def _extract_availability_constraint(self, query: str) -> Constraint | None:
-        normalized = query.lower()
         if not (
-            "in stock" in normalized
-            or "available" in normalized
+            any(pattern.search(query) for pattern in self._availability_patterns)
             or "有货" in query
             or "现货" in query
             or "可购买" in query
+            or "库存充足" in query
         ):
             return None
         return Constraint(

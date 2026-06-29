@@ -15,6 +15,7 @@ class HeadphonesAdapter:
         lowered = query.lower()
         need.category = "headphones"
         _add_use_case_scenarios(need, lowered, query)
+        _add_call_preferences(need, lowered, query)
         _add_connection_preferences(need, lowered, query)
         _add_noise_cancellation_preferences(need, lowered, query)
         _add_latency_preferences(need, lowered, query)
@@ -38,7 +39,7 @@ def _add_use_case_scenarios(need: UserNeed, lowered: str, query: str) -> None:
         ("office", ["office", "calls", "办公", "通话"]),
         ("commute", ["commute", "commuting", "通勤"]),
         ("travel", ["travel", "旅行"]),
-        ("running", ["running", "跑步", "运动"]),
+        ("running", ["running", "workout", "gym", "跑步", "运动", "健身"]),
         ("gaming", ["gaming", "game", "游戏", "电竞"]),
         ("study", ["study", "学习"]),
         ("studio", ["studio", "music", "录音", "音乐"]),
@@ -48,12 +49,33 @@ def _add_use_case_scenarios(need: UserNeed, lowered: str, query: str) -> None:
             _append_unique(need.scenario, scenario)
 
 
+def _add_call_preferences(need: UserNeed, lowered: str, query: str) -> None:
+    if any(
+        term in lowered or term in query
+        for term in [
+            "calls",
+            "office calls",
+            "microphone noise reduction",
+            "mic noise reduction",
+            "通话",
+            "办公通话",
+            "麦克风降噪",
+            "通话降噪",
+        ]
+    ):
+        _append_unique(need.scenario, "office")
+        _append_preference(need, "attributes.use_cases", "calls", 0.6)
+
+
 def _add_connection_preferences(need: UserNeed, lowered: str, query: str) -> None:
     wireless = any(
         term in lowered or term in query
-        for term in ["wireless", "bluetooth", "蓝牙", "无线"]
+        for term in ["wireless", "bluetooth", "true wireless", "tws", "蓝牙", "无线", "真无线"]
     )
-    wired = any(term in lowered or term in query for term in ["wired", "usb", "有线"])
+    wired = any(
+        term in lowered or term in query
+        for term in ["wired", "usb", "usb-c", "有线"]
+    )
     if wireless:
         if any(
             term in lowered or term in query
@@ -70,6 +92,16 @@ def _add_connection_preferences(need: UserNeed, lowered: str, query: str) -> Non
 
 
 def _add_noise_cancellation_preferences(need: UserNeed, lowered: str, query: str) -> None:
+    if any(
+        term in lowered or term in query
+        for term in [
+            "microphone noise reduction",
+            "mic noise reduction",
+            "麦克风降噪",
+            "通话降噪",
+        ]
+    ):
+        return
     if not _mentions_anc(lowered, query):
         return
     if any(
@@ -113,7 +145,17 @@ def _add_battery_preferences(need: UserNeed, lowered: str, query: str) -> None:
 def _add_sweat_preferences(need: UserNeed, lowered: str, query: str) -> None:
     if any(
         term in lowered or term in query
-        for term in ["sweat resistant", "sweatproof", "防汗", "running", "跑步", "运动"]
+        for term in [
+            "sweat resistant",
+            "sweatproof",
+            "workout",
+            "gym",
+            "防汗",
+            "running",
+            "跑步",
+            "运动",
+            "健身",
+        ]
     ):
         _append_preference(need, "attributes.water_resistance", "sweat_resistant", 0.7)
 

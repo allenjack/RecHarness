@@ -43,6 +43,10 @@ def test_headphones_dogfood_runner_returns_grounded_answers():
         assert isinstance(result["warnings"], list)
         assert isinstance(result["claim_issues"], list)
         assert isinstance(result["violations"], list)
+        assert result["recommended_titles"]
+        assert result["warnings_count"] == len(result["warnings"])
+        assert result["claim_issue_count"] == len(result["claim_issues"])
+        assert result["violation_count"] == len(result["violations"])
 
 
 def test_headphones_dogfood_in_stock_task_excludes_out_of_stock_products():
@@ -66,6 +70,8 @@ def test_headphones_dogfood_summary_and_jsonl_output(tmp_path: Path):
     write_jsonl([result], out_path)
 
     assert "Task: dogfood_hp_001" in summary
+    assert "Recommended titles:" in summary
+    assert "Issue counts:" in summary
     assert "Final answer:" in summary
     rows = [json.loads(line) for line in out_path.read_text().splitlines()]
     assert rows == [result]
@@ -88,3 +94,11 @@ def test_headphones_dogfood_runner_executes_as_direct_script(tmp_path: Path):
 
     assert "Task: dogfood_hp_001" in completed.stdout
     assert out_path.exists()
+
+
+def test_headphones_dogfooding_notes_are_developer_focused():
+    text = Path("examples/headphones/dogfooding_notes.md").read_text(encoding="utf-8")
+
+    assert "How to Run" in text
+    assert "Current Observations" in text
+    assert "benchmark report" not in text.lower()

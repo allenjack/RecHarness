@@ -135,14 +135,30 @@ def test_parser_extracts_availability_constraint():
     parser = RuleBasedPreferenceParser()
 
     english = parser.parse("Need lightweight workout earbuds that are in stock")
+    current = parser.parse("Find headphones that are currently available")
+    buy = parser.parse("Find headphones available to buy")
+    purchase = parser.parse("Find headphones available for purchase")
     chinese = parser.parse("想要现货有货的蓝牙耳机")
 
-    for need in [english, chinese]:
+    for need in [english, current, buy, purchase, chinese]:
         assert any(
             constraint.field == "availability"
             and constraint.operator == "="
             and constraint.value == "in_stock"
             for constraint in need.hard_constraints
+        )
+
+
+def test_parser_does_not_treat_ambiguous_available_as_in_stock():
+    parser = RuleBasedPreferenceParser()
+
+    colors = parser.parse("Find headphones with available colors in black")
+    options = parser.parse("Find headphones with available options for travel")
+    sizes = parser.parse("Find headphones with available sizes")
+
+    for need in [colors, options, sizes]:
+        assert not any(
+            constraint.field == "availability" for constraint in need.hard_constraints
         )
 
 
@@ -196,6 +212,8 @@ def test_parser_extracts_new_categories_and_scenarios():
     parser = RuleBasedPreferenceParser()
 
     assert parser.parse("Bluetooth headphones for office").category == "headphones"
+    assert parser.parse("想找头戴耳机").category == "headphones"
+    assert parser.parse("真无线 TWS 入耳式耳塞").category == "headphones"
     assert parser.parse("running shoes for hiking").category == "shoes"
     assert parser.parse("mechanical keyboard for gaming").category == "keyboard"
     assert parser.parse("office mouse").category == "mouse"

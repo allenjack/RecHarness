@@ -16,6 +16,37 @@ def test_headphones_mandatory_anc_and_wired_constraints():
     )
 
 
+def test_headphones_adapter_enriches_calls_tws_and_workout_terms():
+    parser = RuleBasedPreferenceParser()
+
+    calls = parser.parse("Need office calls headphones with microphone noise reduction")
+    chinese_calls = parser.parse("需要办公通话和麦克风降噪的头戴耳机")
+    true_wireless = parser.parse("Need true wireless TWS earbuds")
+    workout = parser.parse("Need gym workout earbuds for 健身")
+    usb_c = parser.parse("Need USB-C wired headphones")
+
+    for need in [calls, chinese_calls]:
+        assert "office" in need.scenario
+        assert any(
+            preference.field == "attributes.use_cases"
+            and preference.value == "calls"
+            for preference in need.soft_preferences
+        )
+    assert any(
+        preference.field == "attributes.connection" and preference.value == "wireless"
+        for preference in true_wireless.soft_preferences
+    )
+    assert any(
+        preference.field == "attributes.water_resistance"
+        and preference.value == "sweat_resistant"
+        for preference in workout.soft_preferences
+    )
+    assert any(
+        preference.field == "attributes.connection" and preference.value == "wired"
+        for preference in usb_c.soft_preferences
+    )
+
+
 def test_headphones_claim_checks_detect_common_overclaims():
     harness = RecHarness.from_jsonl_catalog("examples/headphones/catalog.jsonl")
     report = harness.verify_agent_recommendation(
