@@ -215,6 +215,24 @@ ambiguous queries.
 See `docs/agent_integration.md`, `docs/mcp_config.md`, and
 `docs/domain_adapters.md` for integration details.
 
+## Integrations
+
+RecHarness can be used through:
+
+- Python SDK
+- MCP tools
+- deterministic agent-loop examples
+- optional OpenAI Agents SDK example
+
+Useful links:
+
+- `docs/agent_integration.md`
+- `docs/mcp_config.md`
+- `docs/mcp_client_demo.md`
+- `docs/openai_agents.md`
+- `examples/integrations/mcp_client_demo.py`
+- `examples/integrations/openai_agents_demo.py`
+
 ## Evaluate Agent Outputs
 
 ```bash
@@ -307,8 +325,10 @@ Additional docs:
 - `docs/adding_a_new_domain.md`
 - `docs/agent_integration.md`
 - `docs/mcp_config.md`
+- `docs/mcp_client_demo.md`
 - `docs/domain_adapters.md`
 - `docs/http_server.md`
+- `docs/openai_agents.md`
 
 ## Current Limitations
 
