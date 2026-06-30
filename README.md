@@ -8,8 +8,10 @@ RecHarness is an agent-agnostic recommendation quality layer for making general-
 
 General agents are becoming shopping interfaces, but they can recommend products that violate user constraints, hallucinate attributes, overfit vague preferences, or lack evidence. RecHarness provides the harness-level structure needed to make recommendation flows inspectable and testable.
 
-The current package metadata version is `0.1.0`; v0.2-alpha release notes are
-tracked in `CHANGELOG.md`. The main branch includes:
+The current package metadata version is `0.2.0a0`, corresponding to the
+`v0.2-alpha` release notes in `CHANGELOG.md`. See
+`docs/release_notes_v0.2-alpha.md` for a concise summary of the v0.2-alpha
+release. The main branch includes:
 
 - typed product, preference, constraint, recommendation, verification, and trace schemas
 - deterministic local JSONL catalog loading

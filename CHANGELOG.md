@@ -26,6 +26,7 @@
 
 ### Notes
 
+- Python package metadata uses the PEP 440 version `0.2.0a0` for this alpha release.
 - No external LLM dependency is required.
 - Dogfooding utilities are local development tools, not benchmark report generators.
 

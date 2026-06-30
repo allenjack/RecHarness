@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "recharness"
-version = "0.1.0"
+version = "0.2.0a0"
 description = "An agent-agnostic harness for reliable product recommendation by general-purpose agents."
 readme = "README.md"
 requires-python = ">=3.11"

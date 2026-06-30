@@ -1,5 +1,6 @@
 import json
 import runpy
+import tomllib
 from pathlib import Path
 
 from recharness import EvalRunner, JsonlCatalog, RecHarness
@@ -14,6 +15,7 @@ def test_open_source_docs_exist_and_use_library_positioning():
         "docs/adding_a_new_domain.md",
         "CHANGELOG.md",
         "ROADMAP.md",
+        "docs/release_notes_v0.2-alpha.md",
     ]
     banned_doc_terms = ["paper-" + "specific", "publication-" + "ready"]
 
@@ -33,17 +35,27 @@ def test_v02_alpha_release_docs_are_present_and_positioned():
     readme = Path("README.md").read_text(encoding="utf-8")
     roadmap = Path("ROADMAP.md").read_text(encoding="utf-8")
     checklist = Path("docs/release_checklist.md").read_text(encoding="utf-8")
+    release_notes = Path("docs/release_notes_v0.2-alpha.md").read_text(encoding="utf-8")
+    pyproject = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))
 
+    assert pyproject["project"]["version"] == "0.2.0a0"
     assert "## [0.2.0-alpha] - 2026-06-30" in changelog
+    assert "PEP 440 version `0.2.0a0`" in changelog
     assert "make_recharness_tool_functions()" in changelog
+    assert "current package metadata version is `0.2.0a0`" in readme
     assert "v0.2-alpha focuses on agent integration" in readme
     assert "agent-agnostic recommendation quality layer" in readme
-    assert "OfficeClear Call 32，售价799元，有主动降噪" in readme
+    assert "examples/headphones/catalog.jsonl" in readme
+    assert "recharness verify" in readme
+    assert "docs/release_notes_v0.2-alpha.md" in readme
     assert "## Completed for v0.2-alpha" in roadmap
     assert "Framework-neutral tool adapter" in roadmap
     assert "# Release Checklist" in checklist
     assert "python examples/integrations/run_headphones_dogfood.py" in checklist
     assert "Confirm generated `runs/` output is not committed." in checklist
+    assert "docs/release_notes_v0.2-alpha.md" in checklist
+    assert "# RecHarness v0.2-alpha Release Notes" in release_notes
+    assert "Not a full shopping agent" in release_notes
 
 
 def test_no_paper_specific_artifact_directories_exist():

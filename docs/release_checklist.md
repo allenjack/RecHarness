@@ -11,6 +11,7 @@
 - [ ] Confirm generated `runs/` output is not committed.
 - [ ] Confirm no external LLM credentials are required.
 - [ ] Confirm README, CHANGELOG, and docs are up to date.
+- [ ] Confirm `docs/release_notes_v0.2-alpha.md` is up to date.
 
 ## v0.2-alpha Scope
 
