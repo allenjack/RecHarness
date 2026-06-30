@@ -101,4 +101,6 @@ def test_headphones_dogfooding_notes_are_developer_focused():
 
     assert "How to Run" in text
     assert "Current Observations" in text
+    assert "Latest Manual Review" in text
+    assert "Date: 2026-06-30" in text
     assert "benchmark report" not in text.lower()
