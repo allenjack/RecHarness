@@ -2,13 +2,32 @@
 
 ## Unreleased
 
-- Added stable agent-facing parse, assist, and verify request/response schemas
-- Added multi-catalog configuration loading
-- Added `AgentHarnessRouter` for deterministic domain routing
-- Upgraded MCP adapter to support multi-catalog config mode
-- Added deterministic domain adapter interface
-- Added headphones query enrichment and claim checks
-- Added agent-loop SDK examples and integration docs
+- No unreleased changes yet.
+
+## [0.2.0-alpha] - 2026-06-30
+
+### Added
+
+- Agent-facing request/response schemas for assist, verify, and parse flows.
+- Multi-catalog `AgentHarnessRouter`.
+- Multi-catalog MCP tool support.
+- Framework-neutral tool adapter via `make_recharness_tool_functions()`.
+- Deterministic MCP-style and tool-calling agent demos.
+- Headphones domain adapter with vocabulary for ANC, wired/wireless, TWS, calls, workout, sweat resistance, latency, and battery life.
+- Headphones dogfooding tasks and local dogfood runner.
+- Local dogfooding notes for development quality review.
+
+### Improved
+
+- Safer answer drafting with local catalog wording.
+- More precise availability parsing for in-stock requests.
+- Headphones claim verification and product-title substring handling.
+- Dogfood diagnostics with recommended titles and issue counts.
+
+### Notes
+
+- No external LLM dependency is required.
+- Dogfooding utilities are local development tools, not benchmark report generators.
 
 ## 0.1.0 - Initial alpha
 

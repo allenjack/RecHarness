@@ -28,6 +28,24 @@ def test_open_source_docs_exist_and_use_library_positioning():
     assert "Diagnostic variants help users compare retrieval behavior" in readme
 
 
+def test_v02_alpha_release_docs_are_present_and_positioned():
+    changelog = Path("CHANGELOG.md").read_text(encoding="utf-8")
+    readme = Path("README.md").read_text(encoding="utf-8")
+    roadmap = Path("ROADMAP.md").read_text(encoding="utf-8")
+    checklist = Path("docs/release_checklist.md").read_text(encoding="utf-8")
+
+    assert "## [0.2.0-alpha] - 2026-06-30" in changelog
+    assert "make_recharness_tool_functions()" in changelog
+    assert "v0.2-alpha focuses on agent integration" in readme
+    assert "agent-agnostic recommendation quality layer" in readme
+    assert "OfficeClear Call 32，售价799元，有主动降噪" in readme
+    assert "## Completed for v0.2-alpha" in roadmap
+    assert "Framework-neutral tool adapter" in roadmap
+    assert "# Release Checklist" in checklist
+    assert "python examples/integrations/run_headphones_dogfood.py" in checklist
+    assert "Confirm generated `runs/` output is not committed." in checklist
+
+
 def test_no_paper_specific_artifact_directories_exist():
     for directory in ["reports", "paper", "figures", "latex"]:
         assert not Path(directory).exists()

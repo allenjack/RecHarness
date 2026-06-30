@@ -1,10 +1,15 @@
 # RecHarness
 
-RecHarness is an agent-agnostic harness for making general-purpose agents more reliable product recommenders.
+RecHarness is an agent-agnostic recommendation quality layer for making general-purpose agents more reliable product recommenders. It is not a full shopping agent.
+
+> v0.2-alpha focuses on agent integration: stable agent-facing schemas,
+> multi-catalog routing, MCP tools, framework-neutral tool callables,
+> deterministic agent-loop demos, and local dogfooding utilities.
 
 General agents are becoming shopping interfaces, but they can recommend products that violate user constraints, hallucinate attributes, overfit vague preferences, or lack evidence. RecHarness provides the harness-level structure needed to make recommendation flows inspectable and testable.
 
-The current package version is `0.1.0`. The main branch includes:
+The current package metadata version is `0.1.0`; v0.2-alpha release notes are
+tracked in `CHANGELOG.md`. The main branch includes:
 
 - typed product, preference, constraint, recommendation, verification, and trace schemas
 - deterministic local JSONL catalog loading
@@ -17,10 +22,12 @@ The current package version is `0.1.0`. The main branch includes:
 - `RecHarness.assist()` with recommended and rejected candidate bundles
 - `verify_agent_recommendation()` SDK flow
 - `AgentHarnessRouter` for stable agent-facing parse, assist, and verify envelopes
+- framework-neutral tool callables through `make_recharness_tool_functions()`
 - CLI commands for catalog validation, assist, verify, eval, eval-assist, and optional MCP serving
 - JSONL trace logging
 - batch evaluation
 - backpack and headphones example domains
+- deterministic agent-loop demos and headphones dogfooding utilities
 - pytest coverage for the foundation behavior
 
 No external LLM API is required for the current deterministic harness. Retrieval
@@ -137,6 +144,13 @@ recharness verify \
   --trace-path runs/verify.jsonl
 ```
 
+```bash
+recharness verify \
+  --catalog examples/headphones/catalog.jsonl \
+  --query "想找1000元以内，适合通勤，有降噪的蓝牙耳机" \
+  --answer "我推荐 OfficeClear Call 32，售价799元，有主动降噪。"
+```
+
 ## Assist Flow
 
 ```python
@@ -165,7 +179,7 @@ recharness assist \
 ```bash
 recharness assist \
   --catalog examples/backpacks/catalog.jsonl \
-  --query "1500元以内，适合通勤，能放14寸电脑，不要太商务，最好防水、轻量的双肩包" \
+  --query "1500元以内，适合通勤，能放14寸电脑，不要太商务的双肩包" \
   --top-k 3 \
   --json
 ```
@@ -201,7 +215,7 @@ verify = router.verify(
     VerifyRequest(
         user_query="想找1000元以内，适合通勤，有降噪的蓝牙耳机",
         domain="headphones",
-        agent_answer="我推荐 SonicLite AirBuds，售价699元，有主动降噪。",
+        agent_answer="我推荐 OfficeClear Call 32，售价799元，有主动降噪。",
     )
 )
 ```
