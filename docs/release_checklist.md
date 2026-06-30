@@ -47,6 +47,7 @@ Results:
 
 Notes:
 
+- The `uv` and plain `python` failures were environment/tooling invocation issues in this shell, not project test or build failures.
 - Equivalent local virtualenv checks passed:
   - `.venv/bin/python -m ruff check .`
   - `.venv/bin/python -m pytest`
