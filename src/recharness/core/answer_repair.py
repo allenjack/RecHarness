@@ -275,7 +275,15 @@ def _repair_noise_cancellation(answer: str, observed: Any) -> str:
         updated = updated.replace("with active noise cancellation", "without catalog-listed ANC")
         updated = updated.replace("主动降噪", "本地目录未标注主动降噪")
         return updated
-    return _append_fact_note(answer, f"noise_cancellation is {observed}")
+    updated = answer.replace("，有主动降噪", "")
+    updated = updated.replace(", with active noise cancellation", "")
+    updated = updated.replace(
+        "with active noise cancellation",
+        "with catalog-listed noise handling",
+    )
+    updated = updated.replace("active noise cancellation", "catalog-listed noise handling")
+    updated = updated.replace("主动降噪", "本地目录标注的降噪能力")
+    return _append_fact_note(updated, f"noise_cancellation is {observed}")
 
 
 def _replace_numeric_claim(

@@ -107,6 +107,25 @@ recharness verify \
 `--repair-top-k` requires `--repair`; using it without repair returns a clear
 error.
 
+## Local Dogfooding
+
+Run the local repair dogfood utility to inspect repair behavior across existing
+backpack and headphones fixtures:
+
+```bash
+python examples/integrations/run_repair_dogfood.py
+```
+
+Optional JSONL output stays local and should be written under `runs/`:
+
+```bash
+python examples/integrations/run_repair_dogfood.py \
+  --out runs/repair_dogfood/results.jsonl
+```
+
+The dogfood utility prints lightweight development diagnostics. It is not a
+benchmark report, chart generator, leaderboard, or paper artifact.
+
 For machine-readable output:
 
 ```bash

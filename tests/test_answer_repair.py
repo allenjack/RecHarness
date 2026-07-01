@@ -160,6 +160,7 @@ def test_english_repair_note_uses_english_local_catalog_phrase():
 
     assert result.status == "repaired"
     assert "Local catalog indicates" in result.repaired_answer
+    assert "active noise cancellation" not in result.repaired_answer.lower()
 
 
 def test_repair_or_qualify_answer_is_publicly_exported():
