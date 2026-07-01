@@ -70,6 +70,10 @@ The repair layer is conservative:
 - It leaves safe verified answers unchanged.
 - It corrects catalog-grounded factual mistakes where a deterministic correction is available.
 - It replaces hard-constraint-invalid recommendations only when assist provides a safe recommended candidate.
+- It replaces unresolved or hallucinated product mentions only when assist provides a safe recommended candidate.
+- It repairs factual claim issues before replacing the whole answer when the mentioned product is otherwise valid.
+- It uses Chinese repair notes for Chinese answers and English repair notes for English answers.
+- It only corrects numeric claims when the number appears with relevant price, battery, weight, or laptop-fit context.
 - It qualifies the answer when it cannot safely repair.
 - It does not invent product facts.
 

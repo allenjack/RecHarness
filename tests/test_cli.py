@@ -160,6 +160,50 @@ def test_cli_verify_repair_json_includes_repair_result(capsys):
     assert "有主动降噪" not in payload["repair_result"]["repaired_answer"]
 
 
+def test_cli_verify_repair_top_k_controls_internal_assist(capsys):
+    exit_code = main(
+        [
+            "verify",
+            "--catalog",
+            "examples/backpacks/catalog.jsonl",
+            "--query",
+            "Find a commuting backpack under 1500 RMB that fits a 14-inch laptop",
+            "--answer",
+            "I recommend RainGuard Metro Pack 24L. It costs 1599 RMB.",
+            "--repair",
+            "--repair-top-k",
+            "5",
+        ]
+    )
+
+    captured = capsys.readouterr()
+
+    assert exit_code == 1
+    assert "Repair result:" in captured.out
+    assert "A safer local-catalog recommendation" in captured.out
+
+
+def test_cli_verify_repair_top_k_without_repair_returns_clear_error(capsys):
+    exit_code = main(
+        [
+            "verify",
+            "--catalog",
+            "examples/backpacks/catalog.jsonl",
+            "--query",
+            "Find a commuting backpack under 1500 RMB",
+            "--answer",
+            "I recommend UrbanLite Commuter Backpack 22L. It costs 899 RMB.",
+            "--repair-top-k",
+            "5",
+        ]
+    )
+
+    captured = capsys.readouterr()
+
+    assert exit_code == 2
+    assert "--repair-top-k requires --repair" in captured.err
+
+
 def test_cli_assist_and_verify_trace_path_create_trace_files(tmp_path, capsys):
     assist_trace = tmp_path / "assist.jsonl"
     verify_trace = tmp_path / "verify.jsonl"

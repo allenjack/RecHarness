@@ -18,6 +18,7 @@ from recharness.core import (
     RecHarness,
     RepairResult,
     repair_answer_from_verification,
+    repair_or_qualify_answer,
 )
 from recharness.evaluation import (
     AgentOutput,
@@ -103,6 +104,7 @@ __all__ = [
     "RecommendationCandidate",
     "RepairResult",
     "repair_answer_from_verification",
+    "repair_or_qualify_answer",
     "RuleBasedPreferenceParser",
     "ScoredProduct",
     "SimpleRanker",

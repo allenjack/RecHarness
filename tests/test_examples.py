@@ -39,6 +39,7 @@ def test_v02_alpha_release_docs_are_present_and_positioned():
     roadmap = Path("ROADMAP.md").read_text(encoding="utf-8")
     checklist = Path("docs/release_checklist.md").read_text(encoding="utf-8")
     release_notes = Path("docs/release_notes_v0.2-alpha.md").read_text(encoding="utf-8")
+    repair_docs = Path("docs/repair.md").read_text(encoding="utf-8")
     pyproject = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))
 
     assert pyproject["project"]["version"] == "0.2.0a0"
@@ -53,6 +54,9 @@ def test_v02_alpha_release_docs_are_present_and_positioned():
     assert "docs/release_notes_v0.2-alpha.md" in readme
     assert "docs/agent_loop_contract.md" in readme
     assert "docs/repair.md" in readme
+    assert "--repair-top-k" in repair_docs
+    assert "Bare numbers are not replaced" in repair_docs
+    assert "from recharness import repair_or_qualify_answer" in repair_docs
     assert "## Completed for v0.2-alpha" in roadmap
     assert "Framework-neutral tool adapter" in roadmap
     assert "# Release Checklist" in checklist

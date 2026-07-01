@@ -5,6 +5,7 @@
 - Added deterministic answer repair utility and `RepairResult`.
 - Added v0.3-alpha planning, repair, and agent-loop contract docs.
 - Refactored deterministic demos to use the shared repair utility.
+- Stabilized repair priority, language-aware repair notes, contextual numeric fixes, and `verify --repair-top-k`.
 
 ## [0.2.0-alpha] - 2026-06-30
 

@@ -29,6 +29,7 @@ def main(argv: list[str] | None = None) -> int:
     verify_parser.add_argument("--trace-path")
     verify_parser.add_argument("--no-fail-on-warning", action="store_true")
     verify_parser.add_argument("--repair", action="store_true")
+    verify_parser.add_argument("--repair-top-k", type=int)
     answer_group = verify_parser.add_mutually_exclusive_group(required=True)
     answer_group.add_argument("--answer")
     answer_group.add_argument("--answer-file")
@@ -63,6 +64,14 @@ def main(argv: list[str] | None = None) -> int:
 
     args = parser.parse_args(argv)
 
+    if (
+        args.command == "verify"
+        and args.repair_top_k is not None
+        and not args.repair
+    ):
+        print("--repair-top-k requires --repair", file=sys.stderr)
+        return 2
+
     if args.command == "catalog" and args.catalog_command == "validate":
         return _validate_catalog(args.catalog_path)
     if args.command == "verify":
@@ -75,6 +84,7 @@ def main(argv: list[str] | None = None) -> int:
             trace_path=args.trace_path,
             no_fail_on_warning=args.no_fail_on_warning,
             repair=args.repair,
+            repair_top_k=args.repair_top_k or 3,
         )
     if args.command == "assist":
         return _assist(
@@ -135,6 +145,7 @@ def _verify_recommendation(
     trace_path: str | None = None,
     no_fail_on_warning: bool = False,
     repair: bool = False,
+    repair_top_k: int = 3,
 ) -> int:
     try:
         harness = RecHarness.from_jsonl_catalog(catalog_path, trace_path=trace_path)
@@ -146,7 +157,7 @@ def _verify_recommendation(
     report = harness.verify_agent_recommendation(query, agent_answer)
     repair_result = None
     if repair:
-        assist_bundle = harness.assist(query, top_k=3)
+        assist_bundle = harness.assist(query, top_k=repair_top_k)
         repair_result = repair_answer_from_verification(
             agent_answer,
             report,

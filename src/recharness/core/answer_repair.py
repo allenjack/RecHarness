@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import re
 from typing import Any, Literal
 
 from pydantic import Field
@@ -42,14 +41,15 @@ def repair_answer_from_verification(
     if _report_status(report) == "pass":
         return RepairResult(status="unchanged", repaired_answer=answer)
 
-    hard_problem = _has_hard_violation(report) or _has_hard_claim_issue(report)
     safe_product = _safe_recommended_product(assist_response)
-    if hard_problem and safe_product is not None:
+    should_replace = _has_hard_violation(report) or _has_unresolved_mentions(report)
+    if should_replace and safe_product is not None:
         return RepairResult(
             status="repaired",
             repaired_answer=_replacement_answer(safe_product, answer),
             changes=[
-                "Replaced a hard constraint or hard claim failure with a safe assist candidate."
+                "Replaced a hard constraint failure or unresolved product "
+                "with a safe assist candidate."
             ],
         )
 
@@ -129,10 +129,6 @@ def _has_hard_violation(report: VerificationReport | dict[str, Any]) -> bool:
     return any(_field(violation, "severity") == "hard" for violation in _violations(report))
 
 
-def _has_hard_claim_issue(report: VerificationReport | dict[str, Any]) -> bool:
-    return any(_field(issue, "severity") == "hard" for issue in _claim_issues(report))
-
-
 def _claim_issues(report: VerificationReport | dict[str, Any]) -> list[Any]:
     if isinstance(report, VerificationReport):
         return list(report.claim_issues)
@@ -159,6 +155,14 @@ def _unresolved_warning(report: VerificationReport | dict[str, Any]) -> list[str
     if not mentions:
         return []
     return [f"Unresolved catalog mention(s): {', '.join(str(item) for item in mentions)}"]
+
+
+def _has_unresolved_mentions(report: VerificationReport | dict[str, Any]) -> bool:
+    if isinstance(report, VerificationReport):
+        return bool(report.unresolved_mentions) or not report.product_grounded
+    return bool(report.get("unresolved_mentions")) or not bool(
+        report.get("product_grounded", False)
+    )
 
 
 def _safe_recommended_product(
@@ -203,15 +207,60 @@ def _repair_claim_issue(answer: str, issue: Any) -> tuple[str, list[str]]:
     if claim_type == "noise_cancellation":
         updated = _repair_noise_cancellation(updated, observed)
     elif claim_type == "battery_life":
-        updated = _replace_numeric_claim(updated, claimed, observed, "续航", "小时", "h")
+        updated = _replace_numeric_claim(
+            updated,
+            claimed,
+            observed,
+            [
+                ("续航{claimed}小时", "续航{observed}小时"),
+                ("{claimed}h battery", "{observed}h battery"),
+                ("{claimed} hours of battery", "{observed} hours of battery"),
+                ("battery life {claimed} hours", "battery life {observed} hours"),
+                ("battery life is {claimed} hours", "battery life is {observed} hours"),
+            ],
+        )
     elif claim_type == "price":
-        updated = _replace_numeric_claim(updated, claimed, observed, "售价", "元", "RMB")
+        updated = _replace_numeric_claim(
+            updated,
+            claimed,
+            observed,
+            [
+                ("售价{claimed}元", "售价{observed}元"),
+                ("costs {claimed} RMB", "costs {observed} RMB"),
+                ("costs {claimed} CNY", "costs {observed} CNY"),
+                ("price {claimed} RMB", "price {observed} RMB"),
+                ("price {claimed} CNY", "price {observed} CNY"),
+                ("price is {claimed} RMB", "price is {observed} RMB"),
+                ("price is {claimed} CNY", "price is {observed} CNY"),
+            ],
+        )
     elif claim_type == "weight":
-        updated = _replace_numeric_claim(updated, claimed, observed, "重量", "kg", "kg")
+        updated = _replace_numeric_claim(
+            updated,
+            claimed,
+            observed,
+            [
+                ("重量{claimed}kg", "重量{observed}kg"),
+                ("weighs {claimed} kg", "weighs {observed} kg"),
+                ("weight {claimed} kg", "weight {observed} kg"),
+                ("weight is {claimed} kg", "weight is {observed} kg"),
+            ],
+        )
     elif claim_type == "laptop_fit":
-        updated = _replace_numeric_claim(updated, claimed, observed, "", "寸", "inch")
+        updated = _replace_numeric_claim(
+            updated,
+            claimed,
+            observed,
+            [
+                ("{claimed}寸", "{observed}寸"),
+                ("{claimed}-inch laptop", "{observed}-inch laptop"),
+                ("{claimed} inch laptop", "{observed} inch laptop"),
+                ("fits a {claimed}-inch laptop", "fits a {observed}-inch laptop"),
+                ("fits a {claimed} inch laptop", "fits a {observed} inch laptop"),
+            ],
+        )
     elif claim_type == "availability" and observed is not None:
-        updated = _append_fact_note(updated, f"local catalog availability is {observed}")
+        updated = _append_fact_note(updated, f"availability is {observed}")
 
     if updated != answer:
         changes.append(f"Corrected {claim_type} using catalog value {observed!r}.")
@@ -226,41 +275,26 @@ def _repair_noise_cancellation(answer: str, observed: Any) -> str:
         updated = updated.replace("with active noise cancellation", "without catalog-listed ANC")
         updated = updated.replace("主动降噪", "本地目录未标注主动降噪")
         return updated
-    return _append_fact_note(answer, f"local catalog noise_cancellation is {observed}")
+    return _append_fact_note(answer, f"noise_cancellation is {observed}")
 
 
 def _replace_numeric_claim(
     answer: str,
     claimed: Any,
     observed: Any,
-    chinese_prefix: str,
-    chinese_suffix: str,
-    english_suffix: str,
+    patterns: list[tuple[str, str]],
 ) -> str:
     if claimed is None or observed is None:
         return answer
     claimed_text = _number_text(claimed)
     observed_text = _number_text(observed)
-    replacements = [
-        (
-            f"{chinese_prefix}{claimed_text}{chinese_suffix}",
-            f"{chinese_prefix}{observed_text}{chinese_suffix}",
-        ),
-        (f"{claimed_text}{english_suffix}", f"{observed_text}{english_suffix}"),
-        (f"{claimed_text} {english_suffix}", f"{observed_text} {english_suffix}"),
-    ]
     updated = answer
-    for old, new in replacements:
+    for old_template, new_template in patterns:
+        old = old_template.format(claimed=claimed_text, observed=observed_text)
+        new = new_template.format(claimed=claimed_text, observed=observed_text)
         if old and old in updated:
             updated = updated.replace(old, new)
-    if updated != answer:
-        return updated
-    return re.sub(
-        rf"(?<!\d){re.escape(claimed_text)}(?!\d)",
-        observed_text,
-        answer,
-        count=1,
-    )
+    return updated
 
 
 def _replacement_answer(product: ProductItem | dict[str, Any], original_answer: str) -> str:
@@ -316,6 +350,8 @@ def _qualified_answer(answer: str) -> str:
 
 
 def _append_fact_note(answer: str, fact: str) -> str:
+    if _contains_cjk(answer):
+        return f"{answer} 本地目录标注：{fact}。"
     return f"{answer} Local catalog indicates {fact}."
 
 
