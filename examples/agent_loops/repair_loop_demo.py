@@ -1,18 +1,5 @@
 from recharness import AgentHarnessRouter, VerifyRequest
-
-
-def repair_answer(draft_answer: str, report) -> str:
-    repaired = draft_answer
-    if report is None:
-        return repaired
-    for issue in report.claim_issues:
-        if issue.claim_type == "noise_cancellation":
-            repaired = repaired.replace("，有主动降噪", "")
-        if issue.claim_type == "battery_life":
-            repaired = repaired.replace("，续航30小时", "")
-    if report.repair_suggestions:
-        repaired = f"{repaired}（已移除未通过核验的声明。）"
-    return repaired
+from recharness.core.answer_repair import repair_or_qualify_answer
 
 
 def main() -> None:
@@ -28,7 +15,7 @@ def main() -> None:
         )
     )
     if verify.status != "pass":
-        draft_answer = repair_answer(draft_answer, verify.report)
+        draft_answer = repair_or_qualify_answer(draft_answer, verify)
 
     print(draft_answer)
 

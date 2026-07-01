@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from recharness import AgentHarnessRouter
+from recharness.core.answer_repair import repair_or_qualify_answer
 from recharness.integrations import make_recharness_tool_functions
 
 DEFAULT_QUERY = "想找1000元以内，适合通勤，有降噪的蓝牙耳机"
@@ -61,25 +62,6 @@ def draft_answer_from_assist_response(assist_response: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
-def repair_or_qualify_answer(answer: str, verify_response: dict[str, Any]) -> str:
-    if verify_response.get("status") == "pass":
-        return answer
-
-    report = verify_response.get("report") or {}
-    repaired = answer
-    for issue in report.get("claim_issues", []):
-        if issue.get("claim_type") == "noise_cancellation":
-            repaired = repaired.replace("，有主动降噪", "")
-            repaired = repaired.replace("主动降噪", "目录标注的降噪能力")
-        if issue.get("claim_type") == "battery_life":
-            repaired = repaired.replace("，续航30小时", "")
-
-    caveats = ["已根据本地目录核验并移除或弱化未通过核验的声明。"]
-    if any(violation.get("severity") == "hard" for violation in report.get("violations", [])):
-        caveats.append("注意：部分推荐可能不满足硬性约束，请优先查看约束通过的候选。")
-    return f"{repaired}\n{' '.join(caveats)}"
-
-
 def run_agent_loop(user_query: str) -> dict[str, Any]:
     router = AgentHarnessRouter.from_config_file(CATALOG_CONFIG_PATH)
     tools = make_recharness_tool_functions(router)
@@ -93,7 +75,7 @@ def run_agent_loop(user_query: str) -> dict[str, Any]:
         domain=domain,
         agent_answer=draft,
     )
-    final_answer = repair_or_qualify_answer(draft, verify)
+    final_answer = repair_or_qualify_answer(draft, verify, assist_response=assist)
     bundle = assist.get("bundle") or {}
     report = verify.get("report") or {}
     return {

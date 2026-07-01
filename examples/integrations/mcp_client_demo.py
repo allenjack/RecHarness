@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from recharness import AgentHarnessRouter, AssistRequest, VerifyRequest
+from recharness.core.answer_repair import repair_or_qualify_answer
 
 DEFAULT_QUERY = "想找1000元以内，适合通勤，有降噪的蓝牙耳机"
 
@@ -42,21 +43,6 @@ def draft_answer_from_bundle(bundle) -> str:
     return "\n".join(lines)
 
 
-def repair_or_qualify_answer(answer: str, report) -> str:
-    if report is None or report.status == "pass":
-        return answer
-    repaired = answer
-    for issue in report.claim_issues:
-        if issue.claim_type == "noise_cancellation":
-            repaired = repaired.replace("，有主动降噪", "")
-        if issue.claim_type == "battery_life":
-            repaired = repaired.replace("，续航30小时", "")
-    caveats = ["已根据本地目录核验并移除或弱化未通过核验的声明。"]
-    if any(violation.severity == "hard" for violation in report.violations):
-        caveats.append("注意：部分推荐可能不满足硬性约束，请优先查看约束通过的候选。")
-    return f"{repaired}\n{' '.join(caveats)}"
-
-
 def run_demo(user_query: str | None = None) -> str:
     query = user_query or DEFAULT_QUERY
     router = AgentHarnessRouter.from_config_file("examples/mcp/catalogs.json")
@@ -67,7 +53,7 @@ def run_demo(user_query: str | None = None) -> str:
     verify = router.verify(
         VerifyRequest(user_query=query, domain=domain, agent_answer=draft)
     )
-    return repair_or_qualify_answer(draft, verify.report)
+    return repair_or_qualify_answer(draft, verify, assist_response=assist)
 
 
 def _safe_facts(category: str, attributes: dict[str, Any]) -> list[str]:

@@ -1,4 +1,5 @@
 from recharness import AgentHarnessRouter, AssistRequest, VerifyRequest
+from recharness.core.answer_repair import repair_or_qualify_answer
 
 
 def build_simple_answer_from_bundle(bundle) -> str:
@@ -10,12 +11,6 @@ def build_simple_answer_from_bundle(bundle) -> str:
         else "unknown price"
     )
     return f"我推荐 {product.title}，售价{price}。"
-
-
-def repair_answer(answer: str, report) -> str:
-    if report is None or not report.claim_issues:
-        return answer
-    return f"{answer} 已根据本地目录核验，避免使用未核实的额外属性声明。"
 
 
 def main() -> None:
@@ -43,7 +38,7 @@ def main() -> None:
     )
 
     if verify.status != "pass":
-        draft_answer = repair_answer(draft_answer, verify.report)
+        draft_answer = repair_or_qualify_answer(draft_answer, verify, assist_response=assist)
 
     print(draft_answer)
 

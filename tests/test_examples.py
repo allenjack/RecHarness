@@ -13,6 +13,9 @@ def test_open_source_docs_exist_and_use_library_positioning():
         "docs/verification.md",
         "docs/evaluation.md",
         "docs/adding_a_new_domain.md",
+        "docs/agent_loop_contract.md",
+        "docs/repair.md",
+        "docs/plans/v0.3-alpha.md",
         "CHANGELOG.md",
         "ROADMAP.md",
         "docs/release_notes_v0.2-alpha.md",
@@ -48,6 +51,8 @@ def test_v02_alpha_release_docs_are_present_and_positioned():
     assert "examples/headphones/catalog.jsonl" in readme
     assert "recharness verify" in readme
     assert "docs/release_notes_v0.2-alpha.md" in readme
+    assert "docs/agent_loop_contract.md" in readme
+    assert "docs/repair.md" in readme
     assert "## Completed for v0.2-alpha" in roadmap
     assert "Framework-neutral tool adapter" in roadmap
     assert "# Release Checklist" in checklist
@@ -123,6 +128,8 @@ def test_headphones_jsonl_rows_are_valid_json_objects():
         Path("examples/headphones/catalog.jsonl"),
         Path("examples/headphones/missions.jsonl"),
         Path("examples/headphones/agent_outputs.jsonl"),
+        Path("examples/headphones/edge_cases.jsonl"),
+        Path("examples/backpacks/dogfooding_tasks.jsonl"),
     ]:
         for line in path.read_text(encoding="utf-8").splitlines():
             if line.strip():

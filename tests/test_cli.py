@@ -111,6 +111,55 @@ def test_cli_verify_json_outputs_machine_readable_report(capsys):
     assert payload["claim_issues"][0]["claim_type"] == "water_resistance"
 
 
+def test_cli_verify_repair_prints_repaired_answer(capsys):
+    exit_code = main(
+        [
+            "verify",
+            "--catalog",
+            "examples/headphones/catalog.jsonl",
+            "--query",
+            "想找1000元以内，适合通勤，有降噪的蓝牙耳机",
+            "--answer",
+            "我推荐 SonicLite AirBuds，售价699元，有主动降噪，续航30小时。",
+            "--repair",
+            "--no-fail-on-warning",
+        ]
+    )
+
+    captured = capsys.readouterr()
+
+    assert exit_code == 0
+    assert "Repair result:" in captured.out
+    assert "REPAIRED" in captured.out
+    assert "有主动降噪" not in captured.out
+    assert "续航24小时" in captured.out
+
+
+def test_cli_verify_repair_json_includes_repair_result(capsys):
+    exit_code = main(
+        [
+            "verify",
+            "--catalog",
+            "examples/headphones/catalog.jsonl",
+            "--query",
+            "想找1000元以内，适合通勤，有降噪的蓝牙耳机",
+            "--answer",
+            "我推荐 SonicLite AirBuds，售价699元，有主动降噪，续航30小时。",
+            "--repair",
+            "--json",
+            "--no-fail-on-warning",
+        ]
+    )
+
+    captured = capsys.readouterr()
+    payload = json.loads(captured.out)
+
+    assert exit_code == 0
+    assert payload["report"]["status"] == "warning"
+    assert payload["repair_result"]["status"] == "repaired"
+    assert "有主动降噪" not in payload["repair_result"]["repaired_answer"]
+
+
 def test_cli_assist_and_verify_trace_path_create_trace_files(tmp_path, capsys):
     assist_trace = tmp_path / "assist.jsonl"
     verify_trace = tmp_path / "verify.jsonl"

@@ -153,6 +153,14 @@ recharness verify \
   --answer "我推荐 OfficeClear Call 32，售价799元，有主动降噪。"
 ```
 
+```bash
+recharness verify \
+  --catalog examples/headphones/catalog.jsonl \
+  --query "想找1000元以内，适合通勤，有降噪的蓝牙耳机" \
+  --answer "我推荐 SonicLite AirBuds，售价699元，有主动降噪，续航30小时。" \
+  --repair
+```
+
 ## Assist Flow
 
 ```python
@@ -229,7 +237,8 @@ then default-catalog fallback, which is convenient but less reliable for
 ambiguous queries.
 
 See `docs/agent_integration.md`, `docs/mcp_config.md`, and
-`docs/domain_adapters.md` for integration details.
+`docs/agent_loop_contract.md`, `docs/repair.md`, and `docs/domain_adapters.md`
+for integration details.
 
 ## Integrations
 
@@ -244,6 +253,8 @@ RecHarness can be used through:
 Useful links:
 
 - `docs/agent_integration.md`
+- `docs/agent_loop_contract.md`
+- `docs/repair.md`
 - `docs/mcp_config.md`
 - `docs/mcp_client_demo.md`
 - `docs/tool_calling_agent_demo.md`
@@ -356,6 +367,8 @@ Additional docs:
 - `docs/evaluation.md`
 - `docs/adding_a_new_domain.md`
 - `docs/agent_integration.md`
+- `docs/agent_loop_contract.md`
+- `docs/repair.md`
 - `docs/mcp_config.md`
 - `docs/mcp_client_demo.md`
 - `docs/tool_calling_agent_demo.md`

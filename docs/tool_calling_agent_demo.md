@@ -17,6 +17,9 @@ for a grounded `RecommendationBundle`, drafts only from `bundle.recommended`,
 verifies the draft, and repairs or qualifies the final answer when verification
 returns warning or fail.
 
+The demo uses the shared deterministic repair utility rather than local
+string-edit logic.
+
 ## Run
 
 ```bash

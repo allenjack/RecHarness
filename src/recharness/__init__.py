@@ -12,7 +12,13 @@ from recharness.catalog import (
     MultiCatalogConfig,
     load_multi_catalog_config,
 )
-from recharness.core import AgentHarnessRouter, HarnessVariant, RecHarness
+from recharness.core import (
+    AgentHarnessRouter,
+    HarnessVariant,
+    RecHarness,
+    RepairResult,
+    repair_answer_from_verification,
+)
 from recharness.evaluation import (
     AgentOutput,
     EvalMission,
@@ -95,6 +101,8 @@ __all__ = [
     "RecHarness",
     "RecommendationBundle",
     "RecommendationCandidate",
+    "RepairResult",
+    "repair_answer_from_verification",
     "RuleBasedPreferenceParser",
     "ScoredProduct",
     "SimpleRanker",

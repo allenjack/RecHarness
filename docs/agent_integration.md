@@ -10,7 +10,8 @@ Recommended loop:
 3. Call `assist` with the user query and explicit domain.
 4. Use the `RecommendationBundle` to draft an answer.
 5. Call `verify` with the same explicit domain before returning the final response.
-6. If status is `warning` or `fail`, repair or qualify the answer.
+6. If status is `warning` or `fail`, repair or qualify the answer with
+   `repair_answer_from_verification()`.
 7. Return the grounded answer.
 
 For best reliability, general agents should call `recharness_list_catalogs`,
@@ -22,7 +23,12 @@ queries.
 SDK sketch:
 
 ```python
-from recharness import AgentHarnessRouter, AssistRequest, VerifyRequest
+from recharness import (
+    AgentHarnessRouter,
+    AssistRequest,
+    VerifyRequest,
+    repair_answer_from_verification,
+)
 
 router = AgentHarnessRouter.from_config_file("examples/mcp/catalogs.json")
 catalogs = router.list_catalogs()
@@ -44,7 +50,17 @@ verify = router.verify(
         agent_answer=draft,
     )
 )
+
+repair = repair_answer_from_verification(
+    answer=draft,
+    verify_response=verify,
+    assist_response=assist,
+)
+final_answer = repair.repaired_answer
 ```
 
 Agent-facing methods return stable response envelopes. Errors are returned in
 `errors` lists instead of raw Python exceptions.
+
+See `docs/agent_loop_contract.md` for the full recommended loop and
+`docs/repair.md` for repair behavior.

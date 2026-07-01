@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 from recharness.catalog import CatalogLoadError, JsonlCatalog
-from recharness.core import RecHarness
+from recharness.core import RecHarness, repair_answer_from_verification
 from recharness.evaluation import EvalRunner
 from recharness.integrations.mcp_server import create_mcp_server
 
@@ -28,6 +28,7 @@ def main(argv: list[str] | None = None) -> int:
     verify_parser.add_argument("--json", action="store_true")
     verify_parser.add_argument("--trace-path")
     verify_parser.add_argument("--no-fail-on-warning", action="store_true")
+    verify_parser.add_argument("--repair", action="store_true")
     answer_group = verify_parser.add_mutually_exclusive_group(required=True)
     answer_group.add_argument("--answer")
     answer_group.add_argument("--answer-file")
@@ -73,6 +74,7 @@ def main(argv: list[str] | None = None) -> int:
             json_output=args.json,
             trace_path=args.trace_path,
             no_fail_on_warning=args.no_fail_on_warning,
+            repair=args.repair,
         )
     if args.command == "assist":
         return _assist(
@@ -132,6 +134,7 @@ def _verify_recommendation(
     json_output: bool = False,
     trace_path: str | None = None,
     no_fail_on_warning: bool = False,
+    repair: bool = False,
 ) -> int:
     try:
         harness = RecHarness.from_jsonl_catalog(catalog_path, trace_path=trace_path)
@@ -141,9 +144,25 @@ def _verify_recommendation(
 
     agent_answer = answer if answer is not None else Path(answer_file).read_text(encoding="utf-8")
     report = harness.verify_agent_recommendation(query, agent_answer)
+    repair_result = None
+    if repair:
+        assist_bundle = harness.assist(query, top_k=3)
+        repair_result = repair_answer_from_verification(
+            agent_answer,
+            report,
+            assist_response=assist_bundle,
+        )
 
     if json_output:
-        _print_json(report.model_dump(mode="json"))
+        if repair_result is None:
+            _print_json(report.model_dump(mode="json"))
+        else:
+            _print_json(
+                {
+                    "report": report.model_dump(mode="json"),
+                    "repair_result": repair_result.model_dump(mode="json"),
+                }
+            )
         return _verify_exit_code(report.status, no_fail_on_warning)
 
     print(report.status.upper())
@@ -168,6 +187,18 @@ def _verify_recommendation(
         print("Repair suggestions:")
         for suggestion in report.repair_suggestions:
             print(f"- {suggestion}")
+    if repair_result is not None:
+        print("Repair result:")
+        print(repair_result.status.upper())
+        print(repair_result.repaired_answer)
+        if repair_result.changes:
+            print("Repair changes:")
+            for change in repair_result.changes:
+                print(f"- {change}")
+        if repair_result.warnings:
+            print("Repair warnings:")
+            for warning in repair_result.warnings:
+                print(f"- {warning}")
 
     return _verify_exit_code(report.status, no_fail_on_warning)
 

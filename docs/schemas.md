@@ -14,6 +14,7 @@ Core schemas:
 - `RecommendationBundle`: assist-mode output with recommended and rejected candidates plus a required aggregate constraint report
 - `ClaimIssue`: structured factual claim diagnostic with type, severity, field, claimed value, observed value, and message
 - `VerificationReport`: constraint, product-resolution, and claim verification result
+- `RepairResult`: deterministic answer repair result
 - `TraceEvent`: JSONL trace event
 
 Catalog rows validate as `ProductItem` objects. Product-specific details should go in `attributes` so the core schema remains category-agnostic.

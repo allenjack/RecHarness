@@ -12,12 +12,11 @@
 
 ## Near Term After v0.2-alpha
 
-- Release packaging polish
-- More domain adapter quality passes
+- Exercise the v0.3-alpha repair utility against more edge cases
+- More domain adapter quality passes for backpacks and headphones
+- More product catalog fixtures for existing domains
 - Optional LangGraph integration example
-- Optional HTTP service prototype
-- Better answer repair utilities
-- More product catalog fixtures
+- Optional HTTP service design doc
 
 ## Later
 
